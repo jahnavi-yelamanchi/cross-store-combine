@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  STORE_BACKEND: local
+  MODEL_PROVIDER: mock
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --frozen
+      - name: ruff
+        run: |
+          uv run ruff check --output-format=github .
+          uv run ruff format --check .
+      - name: mypy
+        run: uv run mypy
+      - name: smoke
+        run: |
+          set +e
+          uv run pytest -m smoke
+          code=$?
+          # 5 = no tests collected (main before package PRs merge)
+          if [ "$code" -eq 5 ]; then exit 0; fi
+          exit $code
