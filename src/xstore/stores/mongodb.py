@@ -1,11 +1,5 @@
-"""MongoDB adapter. Local backend: mongomock. Outbox collection stands in for
-change streams locally; Debezium's MongoDB connector covers real mode.
-
-Every write and delete claims its idempotency key; in real mode the claim, the
-mutation and the outbox entry run in one multi-document transaction (needs a
-replica set; see stores/setup/mongodb.yaml). mongomock has no transactions.
-Database name comes from MONGO_DB (placeholder default until the real database exists).
-"""
+"""MongoDB adapter (mongomock locally). Writes claim an idempotency key; real mode
+runs claim + write + outbox in one transaction (stores/setup/mongodb.yaml). DB: MONGO_DB."""
 
 from __future__ import annotations
 
