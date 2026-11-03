@@ -4,24 +4,25 @@
 
 Run mode: `STORE_BACKEND=local`, `MODEL_PROVIDER=mock`. No keys needed for anything below.
 
-### Open PRs (merge in order: #9, #10, then #14, #15, #13, #12, #16, #11)
+### PRs (merge in order: #19, #20, #21, #23, #24, #22, #25)
 
-| Issue | PR | Branch | Base it is stacked on | Opened via | Known gaps |
+| Issue | PR | Branch | Stacked on | Author | Known gaps |
 |---|---|---|---|---|---|
-| #1 entities + mappings | #9 | feat/1-entity-models | main | gh (REST) | - |
-| #2 Store protocol, Postgres, MongoDB | #10 | feat/2-store-protocol | #9 | GitHub app | 2 |
-| #3 DynamoDB, Cosmos DB | #14 | feat/3-dynamo-cosmos | #10 | gh (REST) | - |
-| #4 S3/ADLS Parquet, Iceberg, Snowflake | #15 | feat/4-parquet-adapters | #10 | GitHub app | 2 |
-| #5 HubSpot CRM stub | #13 | feat/5-hubspot-crm | #10 | gh (REST) | - |
-| #6 CDC | #16 | feat/6-cdc | #14 | GitHub app | 2 |
-| #7 synthetic data + frozen v1 | #12 | feat/7-synthetic-generator | #9 | gh (REST) | - |
-| #8 CI | #11 | feat/8-ci-workflow | main | GitHub app | 2 |
+| #1 entities + mappings | #9 (merged) | feat/1-entity-models | main | owner | - |
+| #17 bot PR workflow | #18 (merged) | feat/17-bot-pr-workflow | main | owner | - |
+| #2 Store protocol, Postgres, MongoDB | #19 | bot/2-store-protocol | main | github-actions[bot] | 2 |
+| #3 DynamoDB, Cosmos DB | #20 | bot/3-dynamo-cosmos | #19 | github-actions[bot] | - |
+| #4 S3/ADLS Parquet, Iceberg, Snowflake | #21 | bot/4-parquet-adapters | #19 | github-actions[bot] | 2 |
+| #5 HubSpot CRM stub | #23 | bot/5-hubspot-crm | #19 | github-actions[bot] | - |
+| #6 CDC | #22 | bot/6-cdc | #20 | github-actions[bot] | 2 |
+| #7 synthetic data + frozen v1 | #24 | bot/7-synthetic-generator | main | github-actions[bot] | - |
+| #8 CI | #25 | bot/8-ci-workflow | main | github-actions[bot] | 2 |
 
-All PRs target `main`; stacked PRs show parent commits until the parent merges.
+All PRs target `main`; stacked PRs show parent commits until the parent merges. #10-#16 closed, replaced by #19-#25.
 
 ### Workflow deviations
-- Bot authorship unavailable: PRs opened through the Claude GitHub app connection show author `jahnavi-yelamanchi`, same as GH_TOKEN. Even-numbered PRs (#10, #11, #15, #16) are the "bot" set and carry the Known gaps.
-- `gh issue create` / `gh pr create` use GraphQL, blocked by the proxy; issues and PRs were created via REST (`gh api`).
+- PRs from the owner token and the Claude GitHub app both showed the owner as author. Pushes to `bot/<issue>-<slug>` now open PRs as github-actions[bot] (ADR-010, `.github/workflows/bot-pr.yml`); bodies edited after creation.
+- `gh issue create` / `gh pr create` use GraphQL, blocked by the proxy; issues and PRs created via REST (`gh api`).
 - Branches are stacked, not all cut from main: adapters need the Store protocol, CDC needs the DynamoDB adapter.
 
 ### What runs (on each branch)
@@ -37,5 +38,5 @@ All PRs target `main`; stacked PRs show parent commits until the parent merges.
 ### Other gaps
 - moto state is process-global; tests/cdc resets it before and after its run.
 - Snowflake and HubSpot real-mode `stream_changes` raise NotImplementedError (Snowflake streams / webhook receiver not built).
-- Merging #12 after #13 conflicts in Makefile (`crm` vs `freeze`/`verify-frozen` targets); keep both.
+- Merging #24 after #23 conflicts in Makefile (`crm` vs `freeze`/`verify-frozen` targets); keep both.
 - Combined tree of all 8 branches checked locally: ruff, mypy, 11 smoke tests and `make verify-frozen` pass.
