@@ -1,4 +1,4 @@
-.PHONY: install lint fmt typecheck smoke test check
+.PHONY: install lint fmt typecheck smoke test check crm
 
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
@@ -24,3 +24,6 @@ test:
 	uv run pytest
 
 check: lint typecheck smoke
+
+crm:
+	uv run uvicorn xstore.crm.app:app --port 8030
