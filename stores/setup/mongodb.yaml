@@ -1,0 +1,34 @@
+# DB-side guarantees for the MongoDB store. Not needed locally (mongomock);
+# set up with the real database. Rendered by .github/workflows/db-setup-checklist.yml.
+store: mongodb
+env:
+  MONGO_URI: connection string (replica set or Atlas cluster)
+  MONGO_DB: database name; adapter defaults to `xstore` until set
+checks:
+  - id: replica-set
+    what: Run as a replica set (or Atlas)
+    why: multi-document transactions wrap idempotency claim + write + outbox entry
+    enforced_by: deployment
+  - id: applied-unique
+    what: "_xstore_applied keyed by _id = idempotency key"
+    why: duplicate claims fail at the DB, not only in code
+    enforced_by: built-in _id unique index
+  - id: outbox-seq-unique
+    what: "unique index on _xstore_outbox.seq"
+    why: no two change events share a sequence number
+    enforced_by: adapter creates it on startup
+    command: 'db._xstore_outbox.createIndex({seq: 1}, {unique: true})'
+  - id: applied-retention
+    what: "TTL index on _xstore_applied.ts_ms (optional)"
+    why: bound key table growth; TTL must exceed the longest replay window
+    enforced_by: manual
+    command: 'db._xstore_applied.createIndex({ts_ms: 1}, {expireAfterSeconds: 2592000})'
+  - id: least-privilege-user
+    what: App user with readWrite on MONGO_DB only
+    why: adapter never needs admin or other databases
+    enforced_by: manual
+  - id: pre-images
+    what: changeStreamPreAndPostImages enabled on customers, orders
+    why: Debezium capture.mode change_streams_update_full_with_pre_image needs before images
+    enforced_by: manual
+    command: 'db.runCommand({collMod: "customers", changeStreamPreAndPostImages: {enabled: true}})'
