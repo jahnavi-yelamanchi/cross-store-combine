@@ -1,0 +1,11 @@
+# MongoDB (mongomock locally). Document store keyed by _id.
+store: mongodb
+entities:
+  customer:
+    container: customers
+    key: _id
+    fields: {customer_id: _id, name: name, email: email, phone: phone, country: country, updated_at: updatedAt}
+  order:
+    container: orders
+    key: _id
+    fields: {order_id: _id, customer_id: customerId, amount: total, currency: currency, status: status, ordered_at: orderedAt, updated_at: updatedAt}

@@ -1,0 +1,16 @@
+# Postgres (SQLite locally). Snake-case relational schema, money in cents.
+store: postgres
+entities:
+  customer:
+    container: customers
+    key: id
+    fields: {customer_id: id, name: full_name, email: email, phone: phone, country: country_code, updated_at: updated_at}
+  order:
+    container: orders
+    key: id
+    fields: {order_id: id, customer_id: customer_id, amount: amount_cents, currency: currency, status: status, ordered_at: ordered_at, updated_at: updated_at}
+    units: {amount: cents}
+  batch:
+    container: batches
+    key: id
+    fields: {batch_id: id, sku: sku, quantity: qty, weight_kg: weight_kg, warehouse: warehouse, produced_at: produced_at, expires_at: expires_at, updated_at: updated_at}

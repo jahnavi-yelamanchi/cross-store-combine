@@ -1,0 +1,13 @@
+# HubSpot CRM (FastAPI stub locally). Contacts and deals; properties are strings.
+store: hubspot
+entities:
+  customer:
+    container: contacts
+    key: id
+    fields: {customer_id: id, name: firstname, email: email, phone: phone, country: country, updated_at: lastmodifieddate}
+  order:
+    container: deals
+    key: id
+    fields: {order_id: id, customer_id: associated_contact_id, amount: amount, currency: deal_currency_code, status: dealstage, ordered_at: createdate, updated_at: lastmodifieddate}
+    values:
+      status: {appointmentscheduled: pending, closedwon: paid, contractsent: shipped, closedlost: cancelled, refunded: refunded}

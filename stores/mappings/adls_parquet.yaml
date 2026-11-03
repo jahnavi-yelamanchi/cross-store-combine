@@ -1,0 +1,7 @@
+# ADLS Gen2 Parquet (in-memory locally), queried by Synapse serverless SQL.
+store: adls_parquet
+entities:
+  batch:
+    container: lake/batch
+    key: batch_id
+    fields: {batch_id: batch_id, sku: sku, quantity: quantity, weight_kg: weight_kg, warehouse: warehouse, produced_at: produced_at, expires_at: expires_at, updated_at: updated_at}

@@ -1,0 +1,13 @@
+# DynamoDB (moto locally). Single-table design: pk = <TYPE>#<id>.
+store: dynamodb
+entities:
+  customer:
+    container: xstore
+    key: pk
+    key_prefix: "CUSTOMER#"
+    fields: {customer_id: pk, name: name, email: email, phone: phone, country: country, updated_at: updated_at}
+  order:
+    container: xstore
+    key: pk
+    key_prefix: "ORDER#"
+    fields: {order_id: pk, customer_id: customer_id, amount: amount, currency: currency, status: order_status, ordered_at: ordered_at, updated_at: updated_at}
