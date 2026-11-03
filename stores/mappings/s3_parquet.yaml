@@ -1,0 +1,11 @@
+# S3 Parquet (moto locally), Iceberg table per entity, queried by Athena.
+store: s3_parquet
+entities:
+  customer:
+    container: lake/customer
+    key: customer_id
+    fields: {customer_id: customer_id, name: name, email: email, phone: phone, country: country, updated_at: updated_at}
+  order:
+    container: lake/order
+    key: order_id
+    fields: {order_id: order_id, customer_id: customer_id, amount: amount, currency: currency, status: status, ordered_at: ordered_at, updated_at: updated_at}

@@ -1,0 +1,12 @@
+# Cosmos DB (in-memory locally). Container per entity, partitioned by /id.
+store: cosmosdb
+entities:
+  customer:
+    container: customers
+    key: id
+    fields: {customer_id: id, name: displayName, email: email, phone: phone, country: country, updated_at: _updated}
+  batch:
+    container: batches
+    key: id
+    fields: {batch_id: id, sku: sku, quantity: quantity, weight_kg: weightLb, warehouse: site, produced_at: producedAt, expires_at: expiresAt, updated_at: _updated}
+    units: {weight_kg: lb}

@@ -1,0 +1,7 @@
+# Snowflake (stub; real mode only). Upper-case identifiers.
+store: snowflake
+entities:
+  customer:
+    container: CUSTOMERS
+    key: CUSTOMER_ID
+    fields: {customer_id: CUSTOMER_ID, name: NAME, email: EMAIL, phone: PHONE, country: COUNTRY, updated_at: UPDATED_AT}
