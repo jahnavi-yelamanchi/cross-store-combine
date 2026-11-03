@@ -9,3 +9,5 @@ entities:
     container: deals
     key: id
     fields: {order_id: id, customer_id: associated_contact_id, amount: amount, currency: deal_currency_code, status: dealstage, ordered_at: createdate, updated_at: lastmodifieddate}
+    values:
+      status: {appointmentscheduled: pending, closedwon: paid, contractsent: shipped, closedlost: cancelled, refunded: refunded}

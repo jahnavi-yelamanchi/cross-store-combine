@@ -61,6 +61,4 @@ class Batch(Entity):
     expires_at: datetime | None = None
 
 
-ENTITY_TYPES: dict[str, type[Entity]] = {
-    cls.entity_type: cls for cls in (Customer, Order, Batch)
-}
+ENTITY_TYPES: dict[str, type[Entity]] = {cls.entity_type: cls for cls in (Customer, Order, Batch)}
