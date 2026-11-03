@@ -1,5 +1,8 @@
 """MongoDB adapter. Local backend: mongomock. Outbox collection stands in for
-change streams locally; Debezium's MongoDB connector covers real mode."""
+change streams locally; Debezium's MongoDB connector covers real mode.
+
+Database name comes from MONGO_DB (placeholder default until the real database exists).
+"""
 
 from __future__ import annotations
 
@@ -16,7 +19,7 @@ from pymongo.database import Database
 from xstore.entities import load_mapping
 from xstore.stores.base import ChangeEvent, Op, WriteResult, now_ms
 
-DB_NAME = "xstore"
+DEFAULT_DB_NAME = "xstore"
 
 
 def _encode(doc: dict[str, Any] | None) -> dict[str, Any] | None:
@@ -117,7 +120,7 @@ class MongoStore:
             yield ChangeEvent(store=self.name, **doc)
 
 
-def create_store(backend: str, client: Any = None) -> MongoStore:
+def create_store(backend: str, client: Any = None, db_name: str | None = None) -> MongoStore:
     if client is None:
         if backend == "local":
             import mongomock
@@ -127,4 +130,4 @@ def create_store(backend: str, client: Any = None) -> MongoStore:
             from pymongo import MongoClient
 
             client = MongoClient(os.environ["MONGO_URI"], tz_aware=True)
-    return MongoStore(client[DB_NAME])
+    return MongoStore(client[db_name or os.environ.get("MONGO_DB", DEFAULT_DB_NAME)])
