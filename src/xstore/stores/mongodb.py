@@ -1,5 +1,4 @@
-"""MongoDB adapter (mongomock locally). Writes claim an idempotency key; real mode
-runs claim + write + outbox in one transaction (stores/setup/mongodb.yaml). DB: MONGO_DB."""
+"""MongoDB store: idempotent writes plus a change outbox, so fixes replay safely."""
 
 from __future__ import annotations
 
