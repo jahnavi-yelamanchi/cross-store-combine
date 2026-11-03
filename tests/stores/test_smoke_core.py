@@ -28,5 +28,7 @@ def test_store_round_trip_idempotent_and_streams(name: str) -> None:
     assert not store.write("order", rec, "k1").applied
     assert m.to_canonical("order", store.read("order", "o1") or {}) == order
     assert store.delete("order", "o1", "k2").applied
-    assert store.read("order", "o1") is None
-    assert [e.op for e in store.stream_changes()] == ["c", "d"]
+    store.write("order", rec, "k3")
+    assert not store.delete("order", "o1", "k2").applied  # replayed delete is a no-op
+    assert store.read("order", "o1") is not None
+    assert [e.op for e in store.stream_changes()] == ["c", "d", "c"]

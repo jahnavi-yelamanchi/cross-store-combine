@@ -1,13 +1,16 @@
 """MongoDB adapter. Local backend: mongomock. Outbox collection stands in for
 change streams locally; Debezium's MongoDB connector covers real mode.
 
+Every write and delete claims its idempotency key; in real mode the claim, the
+mutation and the outbox entry run in one multi-document transaction (needs a
+replica set; see stores/setup/mongodb.yaml). mongomock has no transactions.
 Database name comes from MONGO_DB (placeholder default until the real database exists).
 """
 
 from __future__ import annotations
 
 import os
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import Any
@@ -45,8 +48,9 @@ def _decode(doc: dict[str, Any] | None) -> dict[str, Any] | None:
 class MongoStore:
     name = "mongodb"
 
-    def __init__(self, db: Database[dict[str, Any]]) -> None:
+    def __init__(self, db: Database[dict[str, Any]], transactions: bool = False) -> None:
         self.db = db
+        self.transactions = transactions
         self.mapping = load_mapping(self.name)
         self.applied = db["_xstore_applied"]
         self.outbox = db["_xstore_outbox"]
@@ -56,9 +60,19 @@ class MongoStore:
     def _coll(self, entity_type: str) -> Any:
         return self.db[self.mapping.for_entity(entity_type).container]
 
-    def _claim(self, idempotency_key: str) -> bool:
+    def _atomic(self, fn: Callable[[Any], WriteResult]) -> WriteResult:
+        if not self.transactions:
+            return fn(None)
+        with self.db.client.start_session() as session:
+            result: WriteResult = session.with_transaction(fn)
+            return result
+
+    def _claim(self, idempotency_key: str, session: Any) -> bool:
         res = self.applied.update_one(
-            {"_id": idempotency_key}, {"$setOnInsert": {"_id": idempotency_key}}, upsert=True
+            {"_id": idempotency_key},
+            {"$setOnInsert": {"_id": idempotency_key, "ts_ms": now_ms()}},
+            upsert=True,
+            session=session,
         )
         return res.upserted_id is not None
 
@@ -69,12 +83,14 @@ class MongoStore:
         op: Op,
         before: dict[str, Any] | None,
         after: dict[str, Any] | None,
+        session: Any,
     ) -> None:
         counter = self.counters.find_one_and_update(
             {"_id": "outbox"},
             {"$inc": {"seq": 1}},
             upsert=True,
             return_document=ReturnDocument.AFTER,
+            session=session,
         )
         assert counter is not None
         self.outbox.insert_one(
@@ -86,7 +102,8 @@ class MongoStore:
                 "ts_ms": now_ms(),
                 "before": _encode(before),
                 "after": _encode(after),
-            }
+            },
+            session=session,
         )
 
     def read(self, entity_type: str, key: str) -> dict[str, Any] | None:
@@ -97,21 +114,33 @@ class MongoStore:
             yield _decode(doc) or {}
 
     def write(self, entity_type: str, record: dict[str, Any], idempotency_key: str) -> WriteResult:
-        if not self._claim(idempotency_key):
-            return WriteResult(applied=False, idempotency_key=idempotency_key)
         key = str(record[self.mapping.for_entity(entity_type).key])
-        before = self._coll(entity_type).find_one_and_replace(
-            {"_id": key}, _encode({**record, "_id": key}), upsert=True
-        )
-        before = _decode(before)
-        self._emit(entity_type, key, "c" if before is None else "u", before, record)
-        return WriteResult(applied=True, idempotency_key=idempotency_key)
+
+        def apply(session: Any) -> WriteResult:
+            if not self._claim(idempotency_key, session):
+                return WriteResult(applied=False, idempotency_key=idempotency_key)
+            before = _decode(
+                self._coll(entity_type).find_one_and_replace(
+                    {"_id": key}, _encode({**record, "_id": key}), upsert=True, session=session
+                )
+            )
+            self._emit(entity_type, key, "c" if before is None else "u", before, record, session)
+            return WriteResult(applied=True, idempotency_key=idempotency_key)
+
+        return self._atomic(apply)
 
     def delete(self, entity_type: str, key: str, idempotency_key: str) -> WriteResult:
-        before = _decode(self._coll(entity_type).find_one_and_delete({"_id": key}))
-        if before is not None:
-            self._emit(entity_type, key, "d", before, None)
-        return WriteResult(applied=True, idempotency_key=idempotency_key)
+        def apply(session: Any) -> WriteResult:
+            if not self._claim(idempotency_key, session):
+                return WriteResult(applied=False, idempotency_key=idempotency_key)
+            before = _decode(
+                self._coll(entity_type).find_one_and_delete({"_id": key}, session=session)
+            )
+            if before is not None:
+                self._emit(entity_type, key, "d", before, None, session)
+            return WriteResult(applied=True, idempotency_key=idempotency_key)
+
+        return self._atomic(apply)
 
     def stream_changes(self, since: int = 0) -> Iterator[ChangeEvent]:
         for doc in self.outbox.find({"seq": {"$gt": since}}).sort("seq", ASCENDING):
@@ -121,6 +150,7 @@ class MongoStore:
 
 
 def create_store(backend: str, client: Any = None, db_name: str | None = None) -> MongoStore:
+    transactions = backend != "local"
     if client is None:
         if backend == "local":
             import mongomock
@@ -130,4 +160,5 @@ def create_store(backend: str, client: Any = None, db_name: str | None = None) -
             from pymongo import MongoClient
 
             client = MongoClient(os.environ["MONGO_URI"], tz_aware=True)
-    return MongoStore(client[db_name or os.environ.get("MONGO_DB", DEFAULT_DB_NAME)])
+    db = client[db_name or os.environ.get("MONGO_DB", DEFAULT_DB_NAME)]
+    return MongoStore(db, transactions=transactions)
