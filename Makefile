@@ -1,4 +1,4 @@
-.PHONY: install lint fmt typecheck smoke test check freeze verify-frozen
+.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen
 
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
@@ -30,3 +30,6 @@ freeze:
 
 verify-frozen:
 	uv run python -m xstore.synth.freeze --out evals/frozen/v1 --verify
+
+crm:
+	uv run uvicorn xstore.crm.app:app --port 8030

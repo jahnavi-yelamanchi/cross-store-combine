@@ -1,0 +1,36 @@
+name: db-setup-checklist
+
+# Renders stores/setup/*.yaml (DB-side checks to configure with each real
+# database) into the job summary. Read-only; touches no database.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, "bot/**"]
+    paths: ["stores/setup/**", ".github/workflows/db-setup-checklist.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  checklist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Render checklist
+        shell: python
+        run: |
+          import os, pathlib, yaml
+          out = ["# DB setup checklist", ""]
+          for f in sorted(pathlib.Path("stores/setup").glob("*.yaml")):
+              spec = yaml.safe_load(f.read_text())
+              out += [f"## {spec['store']}", "", "Env: " + ", ".join(f"`{k}`" for k in spec.get("env", {})), ""]
+              out += ["| id | what | why | enforced by | command |", "|---|---|---|---|---|"]
+              for c in spec["checks"]:
+                  cmd = f"`{c['command']}`" if c.get("command") else ""
+                  out.append(f"| {c['id']} | {c['what']} | {c['why']} | {c['enforced_by']} | {cmd} |")
+              out.append("")
+          text = "\n".join(out)
+          print(text)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as fh:
+              fh.write(text)
