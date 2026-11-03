@@ -1,0 +1,64 @@
+name: bot-pr
+
+# Branch naming: bot/<issue-number>-<slug>. A push opens a PR authored by
+# github-actions[bot] (needs "Allow GitHub Actions to create and approve pull
+# requests"). PRs created with GITHUB_TOKEN do not trigger other workflows, so
+# checks run here on the push and report on the PR's head commit.
+
+on:
+  push:
+    branches: ["bot/**"]
+
+concurrency:
+  group: bot-pr-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  STORE_BACKEND: local
+  MODEL_PROVIDER: mock
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+    steps:
+      - name: Open PR if none exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            echo "PR already open for $BRANCH"; exit 0
+          fi
+          issue=$(echo "$BRANCH" | sed -E 's#^bot/([0-9]+)-.*#\1#')
+          if ! [[ "$issue" =~ ^[0-9]+$ ]]; then
+            echo "branch must be bot/<issue>-<slug>"; exit 1
+          fi
+          title=$(gh issue view "$issue" --json title --jq .title)
+          gh pr create --base main --head "$BRANCH" --title "$title" --body "Closes #$issue"
+
+  checks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff check --output-format=github .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - name: smoke
+        run: |
+          set +e
+          uv run pytest -m smoke
+          code=$?
+          if [ "$code" -eq 5 ]; then exit 0; fi
+          exit $code
