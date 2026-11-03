@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "name": "ChangeEvent",
+  "namespace": "io.xstore.cdc",
+  "doc": "Canonical change envelope on topic xstore.changes; mirrors xstore.stores.base.ChangeEvent.",
+  "fields": [
+    {"name": "store", "type": "string"},
+    {"name": "entity_type", "type": "string"},
+    {"name": "key", "type": "string"},
+    {"name": "op", "type": {"type": "enum", "name": "Op", "symbols": ["c", "u", "d"]}},
+    {"name": "seq", "type": "long"},
+    {"name": "ts_ms", "type": {"type": "long", "logicalType": "timestamp-millis"}},
+    {"name": "before", "type": ["null", "string"], "default": null, "doc": "native record as JSON"},
+    {"name": "after", "type": ["null", "string"], "default": null, "doc": "native record as JSON"}
+  ]
+}

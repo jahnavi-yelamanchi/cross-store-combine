@@ -1,0 +1,11 @@
+# Schema Registry (Redpanda built-in locally, Confluent-compatible API).
+url: http://schema-registry:8081
+compatibility: BACKWARD
+subject_name_strategy: TopicNameStrategy
+subjects:
+  xstore.changes-value:
+    schema: change_event.avsc
+    compatibility: BACKWARD
+topics:
+  xstore.changes: {partitions: 6, key: "store|entity_type|key", retention_ms: 604800000}
+  xstore.cdc.dlq: {partitions: 1, retention_ms: 1209600000}
