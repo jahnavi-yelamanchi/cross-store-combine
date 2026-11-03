@@ -1,0 +1,57 @@
+[project]
+name = "xstore"
+version = "0.1.0"
+description = "Cross-store reconciliation agent: CDC drift detection, probabilistic matching, approved idempotent fixes, replayable ledger."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Jahnavi Yelamanchi" }]
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.43",
+    "fastapi>=0.115",
+    "fastavro>=1.9",
+    "httpx>=0.27",
+    "mongomock>=4.3",
+    "moto[dynamodb,s3]>=5.0",
+    "pyarrow>=17",
+    "pydantic>=2.8",
+    "pymongo>=4.8",
+    "pyyaml>=6.0",
+    "sqlalchemy>=2.0",
+    "uvicorn>=0.30",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.11",
+    "pre-commit>=3.8",
+    "pytest>=8.3",
+    "ruff>=0.6",
+    "types-boto3>=1.35",
+    "types-pyyaml>=6.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.8,<0.12"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src"]
+disallow_untyped_defs = true
+check_untyped_defs = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+plugins = ["pydantic.mypy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["smoke: fast per-package smoke test", "e2e: end-to-end on local backends"]
