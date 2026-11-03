@@ -35,6 +35,7 @@ All PRs target `main`; stacked PRs show parent commits until the parent merges.
 - azure-cosmos, azure-identity, azure-storage-file-datalake, snowflake-connector-python are optional imports, not dependencies.
 
 ### Other gaps
-- moto state is process-global; tests/cdc resets it. Once all PRs merge, other moto-backed smoke tests may need the same isolation.
+- moto state is process-global; tests/cdc resets it before and after its run.
 - Snowflake and HubSpot real-mode `stream_changes` raise NotImplementedError (Snowflake streams / webhook receiver not built).
-- Smoke tests not run on the combined tree; each branch passes on its own.
+- Merging #12 after #13 conflicts in Makefile (`crm` vs `freeze`/`verify-frozen` targets); keep both.
+- Combined tree of all 8 branches checked locally: ruff, mypy, 11 smoke tests and `make verify-frozen` pass.
