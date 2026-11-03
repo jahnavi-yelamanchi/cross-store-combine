@@ -1,0 +1,400 @@
+{"entity_type":"batch","field":"quantity","id":"inj-0000","injected":"190.0","key":"B000223","original":190,"store":"adls_parquet","type":"type_drift"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0001","injected":4792,"key":"O001416","original":479223,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"customerId","id":"inj-0002","injected":"CX635656","key":"O001788","original":"C001407","store":"mongodb","type":"orphaned"}
+{"entity_type":"order","field":"customer_id","id":"inj-0004","injected":"CX604596","key":"O003685","original":"C000126","store":"postgres","type":"orphaned"}
+{"entity_type":"customer","field":null,"id":"inj-0005","injected":"CD046542","key":"C001044","original":"C001044","store":"dynamodb","type":"duplicate"}
+{"entity_type":"batch","field":null,"id":"inj-0006","injected":null,"key":"B001065","original":{"batch_id":"B001065","expires_at":"2026-04-10 20:46:14+00:00","produced_at":"2025-02-17 20:46:14+00:00","quantity":630,"sku":"SKU-0386","updated_at":"2025-04-17 18:28:10+00:00","warehouse":"WH-WEST","weight_kg":871.468},"store":"adls_parquet","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0007","injected":"tara.xu2206@legacy.example.com","key":"C002206","original":"tara.xu2206@example.com","store":"s3_parquet","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0008","injected":"jtn.patel1767@corp.example.com","key":"C001767","original":"jun.patel1767@corp.example.com","store":"hubspot","type":"typo"}
+{"entity_type":"order","field":"customerId","id":"inj-0009","injected":"CX889208","key":"O002718","original":"C000217","store":"mongodb","type":"orphaned"}
+{"entity_type":"batch","field":null,"id":"inj-0010","injected":null,"key":"B001475","original":{"_updated":"2025-12-08 17:56:36+00:00","expiresAt":"2026-05-20 00:10:09+00:00","id":"B001475","producedAt":"2025-09-12 00:10:09+00:00","quantity":1421,"site":"WH-WEST","sku":"SKU-0308","weightLb":4343.6834},"store":"cosmosdb","type":"missing"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0011","injected":1612,"key":"O002078","original":161258,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0014","injected":1306,"key":"O002856","original":130655,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0017","injected":null,"key":"C003065","original":{"country_code":"BR","email":"dev.garcia3065@example.org","full_name":"Dev Garcia","id":"C003065","phone":"+1-555-474-4513","updated_at":"2025-07-04 19:17:45+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":"name","id":"inj-0018","injected":"Uma Okafom","key":"C002521","original":"Uma Okafor","store":"dynamodb","type":"typo"}
+{"entity_type":"order","field":null,"id":"inj-0019","injected":null,"key":"O003415","original":{"_id":"O003415","currency":"USD","customerId":"C001084","orderedAt":"2025-07-04 07:00:20+00:00","status":"shipped","total":"585.36","updatedAt":"2025-10-27 18:12:24+00:00"},"store":"mongodb","type":"missing"}
+{"entity_type":"batch","field":null,"id":"inj-0020","injected":null,"key":"B000623","original":{"batch_id":"B000623","expires_at":"2026-08-30 05:10:39+00:00","produced_at":"2025-04-08 05:10:39+00:00","quantity":1421,"sku":"SKU-0286","updated_at":"2025-12-13 16:52:53+00:00","warehouse":"WH-NORTH","weight_kg":788.864},"store":"adls_parquet","type":"missing"}
+{"entity_type":"order","field":null,"id":"inj-0021","injected":"OD450770","key":"O000861","original":"O000861","store":"dynamodb","type":"duplicate"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0024","injected":1803.397,"key":"B001047","original":3975.8051,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"batch","field":"warehouse","id":"inj-0025","injected":"warehouse_code","key":"B001626","original":"warehouse","store":"postgres","type":"schema_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0026","injected":"hana.okafor3015@legacy.example.com","key":"C003015","original":"hana.okafor3015@example.org","store":"s3_parquet","type":"stale"}
+{"entity_type":"order","field":"amount","id":"inj-0027","injected":87.21,"key":"O000348","original":"87.21","store":"s3_parquet","type":"type_drift"}
+{"entity_type":"order","field":"customerId","id":"inj-0028","injected":"CX696101","key":"O002112","original":"C003451","store":"mongodb","type":"orphaned"}
+{"entity_type":"customer","field":null,"id":"inj-0029","injected":null,"key":"C002537","original":{"country_code":"US","email":"priya.kim2537@example.org","full_name":"Priya Kim","id":"C002537","phone":"+1-555-333-3794","updated_at":"2025-09-26 07:19:29+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0030","injected":"ada.mensah383@legacy.example.com","key":"C000383","original":"ada.mensah383@example.net","store":"hubspot","type":"stale"}
+{"entity_type":"customer","field":"name","id":"inj-0031","injected":"Han Okafor","key":"C001272","original":"Hana Okafor","store":"s3_parquet","type":"typo"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0032","injected":444.352,"key":"B000051","original":979.6273,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"batch","field":"quantity","id":"inj-0033","injected":457,"key":"B000502","original":426,"store":"adls_parquet","type":"stale"}
+{"entity_type":"order","field":"currency","id":"inj-0034","injected":"currency_code","key":"O001698","original":"currency","store":"mongodb","type":"schema_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0037","injected":"2084.0","key":"B001344","original":2084,"store":"cosmosdb","type":"type_drift"}
+{"entity_type":"order","field":null,"id":"inj-0038","injected":null,"key":"O000023","original":{"amount_cents":474950,"currency":"USD","customer_id":"C003676","id":"O000023","ordered_at":"2025-02-09 22:57:48+00:00","status":"paid","updated_at":"2025-11-09 06:48:10+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0039","injected":238.327,"key":"B001596","original":525.4205,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"customer","field":"email","id":"inj-0041","injected":"omar.usman206@legacy.example.com","key":"C000206","original":"omar.usman206@example.com","store":"mongodb","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0042","injected":"tara.baker375o7@example.com","key":"C003757","original":"tara.baker3757@example.com","store":"dynamodb","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0043","injected":"wen.eriksen3282@legacy.example.com","key":"C003282","original":"wen.eriksen3282@corp.example.com","store":"cosmosdb","type":"stale"}
+{"entity_type":"customer","field":null,"id":"inj-0045","injected":null,"key":"C003892","original":{"country":"US","email":"rosa.chen3892@example.org","firstname":"Rosa Chen","id":"C003892","lastmodifieddate":"2025-11-29 21:26:44+00:00","phone":"+1-555-574-5080"},"store":"hubspot","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0046","injected":"CX854596","key":"O002511","original":"C001580","store":"postgres","type":"orphaned"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0048","injected":57,"key":"O003676","original":5722,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0050","injected":"CD880660","key":"C001013","original":"C001013","store":"s3_parquet","type":"duplicate"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0053","injected":693,"key":"O000319","original":69385,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":"email","id":"inj-0054","injected":"umakgarcia1170@example.org","key":"C001170","original":"uma.garcia1170@example.org","store":"s3_parquet","type":"typo"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0055","injected":4700,"key":"O003659","original":470063,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"status","id":"inj-0056","injected":"paid","key":"O000331","original":"pending","store":"mongodb","type":"stale"}
+{"entity_type":"order","field":null,"id":"inj-0058","injected":"OD740734","key":"O000627","original":"O000627","store":"postgres","type":"duplicate"}
+{"entity_type":"batch","field":"site","id":"inj-0059","injected":"warehouse_code","key":"B000850","original":"site","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"order","field":"total","id":"inj-0060","injected":1411.3,"key":"O001356","original":"1411.3","store":"mongodb","type":"type_drift"}
+{"entity_type":"customer","field":"full_name","id":"inj-0061","injected":"Ben Abobtt","key":"C001909","original":"Ben Abbott","store":"postgres","type":"typo"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0062","injected":"CX440552","key":"O003412","original":"C001769","store":"hubspot","type":"orphaned"}
+{"entity_type":"batch","field":"quantity","id":"inj-0064","injected":"2290.0","key":"B001757","original":2290,"store":"adls_parquet","type":"type_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0065","injected":"CX500149","key":"O001559","original":"C000884","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"batch","field":null,"id":"inj-0066","injected":"BD368845","key":"B001933","original":"B001933","store":"adls_parquet","type":"duplicate"}
+{"entity_type":"order","field":"total","id":"inj-0067","injected":1373.59,"key":"O003497","original":"1373.59","store":"mongodb","type":"type_drift"}
+{"entity_type":"customer","field":"phone","id":"inj-0068","injected":"phone_number","key":"C002205","original":"phone","store":"mongodb","type":"schema_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0069","injected":"CX632556","key":"O003277","original":"C001137","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"customer","field":"phone","id":"inj-0070","injected":"phone_number","key":"C002000","original":"phone","store":"dynamodb","type":"schema_drift"}
+{"entity_type":"order","field":"total","id":"inj-0072","injected":4804.98,"key":"O001990","original":"4804.98","store":"mongodb","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0073","injected":"4134.0","key":"B000798","original":4134,"store":"adls_parquet","type":"type_drift"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0074","injected":4271,"key":"O002740","original":427128,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0075","injected":"CD423956","key":"C003272","original":"C003272","store":"postgres","type":"duplicate"}
+{"entity_type":"order","field":null,"id":"inj-0076","injected":null,"key":"O001915","original":{"amount":"1960.59","currency":"USD","customer_id":"C003537","order_id":"O001915","ordered_at":"2025-10-14 09:00:01+00:00","status":"refunded","updated_at":"2025-12-09 02:12:36+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0077","injected":"email_address","key":"C002548","original":"email","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0078","injected":"CX950983","key":"O000111","original":"C002893","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"batch","field":null,"id":"inj-0080","injected":null,"key":"B001358","original":{"expires_at":"2025-05-24 20:32:08+00:00","id":"B001358","produced_at":"2025-03-07 20:32:08+00:00","qty":2143,"sku":"SKU-0285","updated_at":"2025-12-22 01:26:44+00:00","warehouse":"WH-NORTH","weight_kg":1843.428},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":"name","id":"inj-0082","injected":"Prfiya Weber","key":"C001755","original":"Priya Weber","store":"s3_parquet","type":"typo"}
+{"entity_type":"order","field":"total","id":"inj-0084","injected":1473.29,"key":"O001341","original":"1473.29","store":"mongodb","type":"type_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0085","injected":"elena.young1863@legacy.example.com","key":"C001863","original":"elena.young1863@example.net","store":"dynamodb","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0086","injected":"ben.zhou3118@legacy.example.com","key":"C003118","original":"ben.zhou3118@example.com","store":"hubspot","type":"stale"}
+{"entity_type":"order","field":"order_status","id":"inj-0087","injected":"shipped","key":"O003081","original":"pending","store":"dynamodb","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0088","injected":"elna.varga1926@example.com","key":"C001926","original":"lena.varga1926@example.com","store":"cosmosdb","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0089","injected":"ada.usman991@corp.example.com","key":"C000919","original":"ada.usman919@corp.example.com","store":"hubspot","type":"typo"}
+{"entity_type":"order","field":"customer_id","id":"inj-0090","injected":"CX032537","key":"O003090","original":"C002248","store":"dynamodb","type":"orphaned"}
+{"entity_type":"customer","field":null,"id":"inj-0091","injected":"CD879995","key":"C000817","original":"C000817","store":"dynamodb","type":"duplicate"}
+{"entity_type":"order","field":"currency","id":"inj-0092","injected":"currency_code","key":"O000626","original":"currency","store":"postgres","type":"schema_drift"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0093","injected":155.454,"key":"B000259","original":342.717,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"batch","field":"warehouse","id":"inj-0094","injected":"warehouse_code","key":"B001373","original":"warehouse","store":"postgres","type":"schema_drift"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0095","injected":122.214,"key":"B001156","original":269.4354,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0096","injected":"3046.1609","key":"B000953","original":3046.1609,"store":"cosmosdb","type":"type_drift"}
+{"entity_type":"order","field":null,"id":"inj-0097","injected":null,"key":"O001050","original":{"amount_cents":35823,"currency":"USD","customer_id":"C002614","id":"O001050","ordered_at":"2025-04-10 03:23:25+00:00","status":"pending","updated_at":"2025-07-28 14:22:51+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":null,"id":"inj-0099","injected":null,"key":"C003354","original":{"country":"DE","customer_id":"C003354","email":"kofi.lopez3354@example.com","name":"Kofi Lopez","phone":"+1-555-472-7505","updated_at":"2025-03-21 23:57:56+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"customer","field":"phone","id":"inj-0100","injected":"phone_number","key":"C003951","original":"phone","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0102","injected":"CX952134","key":"O002776","original":"C000731","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"order","field":"dealstage","id":"inj-0103","injected":"appointmentscheduled","key":"O001625","original":"closedwon","store":"hubspot","type":"stale"}
+{"entity_type":"order","field":"customer_id","id":"inj-0104","injected":"CX870917","key":"O002830","original":"C003277","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"customer","field":null,"id":"inj-0105","injected":null,"key":"C000995","original":{"country_code":"DE","email":"kofi.kim995@corp.example.com","full_name":"Kofi Kim","id":"C000995","phone":"+1-555-841-1477","updated_at":"2025-03-17 08:21:22+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"batch","field":null,"id":"inj-0106","injected":null,"key":"B001428","original":{"_updated":"2025-10-30 08:53:18+00:00","expiresAt":"2026-02-17 12:52:34+00:00","id":"B001428","producedAt":"2025-04-20 12:52:34+00:00","quantity":36,"site":"WH-WEST","sku":"SKU-0167","weightLb":805.2132},"store":"cosmosdb","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0108","injected":"farah.diaz2318@legacy.example.com","key":"C002318","original":"farah.diaz2318@example.com","store":"s3_parquet","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0109","injected":"lena.patel2183@legacy.example.com","key":"C002183","original":"lena.patel2183@example.com","store":"hubspot","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0113","injected":"hana.sungh433@corp.example.com","key":"C000433","original":"hana.singh433@corp.example.com","store":"mongodb","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0115","injected":"zoe.young1783@legacy.example.com","key":"C001783","original":"zoe.young1783@example.org","store":"cosmosdb","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0117","injected":"email_address","key":"C001106","original":"email","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0118","injected":3431,"key":"O001906","original":343163,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":null,"id":"inj-0120","injected":"OD281433","key":"O002428","original":"O002428","store":"postgres","type":"duplicate"}
+{"entity_type":"order","field":null,"id":"inj-0121","injected":null,"key":"O001006","original":{"amount":"2346.19","currency":"USD","customer_id":"C003075","order_id":"O001006","ordered_at":"2025-02-19 01:53:05+00:00","status":"cancelled","updated_at":"2025-11-22 04:31:48+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0122","injected":"CX924457","key":"O001142","original":"C002731","store":"dynamodb","type":"orphaned"}
+{"entity_type":"customer","field":"email","id":"inj-0123","injected":"ximena.varga999@legacy.example.com","key":"C000999","original":"ximena.varga999@example.net","store":"mongodb","type":"stale"}
+{"entity_type":"order","field":"customer_id","id":"inj-0124","injected":"CX700646","key":"O002502","original":"C002100","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"order","field":null,"id":"inj-0126","injected":null,"key":"O001333","original":{"amount":"1428.11","currency":"USD","customer_id":"C000195","order_id":"O001333","ordered_at":"2025-10-30 13:50:40+00:00","status":"pending","updated_at":"2025-12-28 06:38:03+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"customer","field":"phone","id":"inj-0127","injected":"phone_number","key":"C001997","original":"phone","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0128","injected":"2648.6371","key":"B000727","original":2648.6371,"store":"cosmosdb","type":"type_drift"}
+{"entity_type":"order","field":"amount","id":"inj-0129","injected":338.71,"key":"O001394","original":"338.71","store":"dynamodb","type":"type_drift"}
+{"entity_type":"customer","field":"firstname","id":"inj-0130","injected":"Ivan Fiscrer","key":"C003606","original":"Ivan Fischer","store":"hubspot","type":"typo"}
+{"entity_type":"customer","field":"displayName","id":"inj-0131","injected":"Iva nPatel","key":"C002116","original":"Ivan Patel","store":"cosmosdb","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0132","injected":"lena.eriksen2r949@example.com","key":"C002949","original":"lena.eriksen2949@example.com","store":"dynamodb","type":"typo"}
+{"entity_type":"customer","field":null,"id":"inj-0133","injected":"CD724156","key":"C000985","original":"C000985","store":"s3_parquet","type":"duplicate"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0134","injected":3229,"key":"O001837","original":322943,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":"email","id":"inj-0137","injected":"kofipkim996@corp.example.com","key":"C000996","original":"kofi.kim996@corp.example.com","store":"s3_parquet","type":"typo"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0138","injected":2761,"key":"O001744","original":276170,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0139","injected":3137,"key":"O001443","original":313746,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"order_status","id":"inj-0141","injected":"pending","key":"O001029","original":"paid","store":"dynamodb","type":"stale"}
+{"entity_type":"order","field":null,"id":"inj-0143","injected":null,"key":"O002196","original":{"amount_cents":318667,"currency":"USD","customer_id":"C002740","id":"O002196","ordered_at":"2025-05-17 08:26:09+00:00","status":"shipped","updated_at":"2025-10-20 12:56:18+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0144","injected":"CX226895","key":"O000785","original":"C001347","store":"hubspot","type":"orphaned"}
+{"entity_type":"order","field":null,"id":"inj-0145","injected":"OD289930","key":"O001985","original":"O001985","store":"postgres","type":"duplicate"}
+{"entity_type":"order","field":"currency","id":"inj-0146","injected":"currency_code","key":"O001161","original":"currency","store":"postgres","type":"schema_drift"}
+{"entity_type":"batch","field":null,"id":"inj-0147","injected":"BD203547","key":"B001707","original":"B001707","store":"cosmosdb","type":"duplicate"}
+{"entity_type":"customer","field":"firstname","id":"inj-0149","injected":"Ada Km","key":"C000058","original":"Ada Kim","store":"hubspot","type":"typo"}
+{"entity_type":"order","field":"order_status","id":"inj-0151","injected":"pending","key":"O002856","original":"shipped","store":"dynamodb","type":"stale"}
+{"entity_type":"batch","field":null,"id":"inj-0152","injected":"BD012861","key":"B001788","original":"B001788","store":"cosmosdb","type":"duplicate"}
+{"entity_type":"order","field":"customerId","id":"inj-0153","injected":"CX501968","key":"O001923","original":"C002090","store":"mongodb","type":"orphaned"}
+{"entity_type":"order","field":"customer_id","id":"inj-0154","injected":"CX193319","key":"O001397","original":"C002104","store":"postgres","type":"orphaned"}
+{"entity_type":"batch","field":"quantity","id":"inj-0155","injected":4307,"key":"B000518","original":4276,"store":"adls_parquet","type":"stale"}
+{"entity_type":"order","field":"customer_id","id":"inj-0156","injected":"CX515633","key":"O001640","original":"C003634","store":"dynamodb","type":"orphaned"}
+{"entity_type":"batch","field":"quantity","id":"inj-0157","injected":2193,"key":"B001181","original":2152,"store":"cosmosdb","type":"stale"}
+{"entity_type":"customer","field":null,"id":"inj-0158","injected":"CD850544","key":"C000612","original":"C000612","store":"cosmosdb","type":"duplicate"}
+{"entity_type":"order","field":"amount","id":"inj-0159","injected":87.21,"key":"O000348","original":"87.21","store":"dynamodb","type":"type_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0160","injected":"ivan.hadtdad486@example.net","key":"C000486","original":"ivan.haddad486@example.net","store":"dynamodb","type":"typo"}
+{"entity_type":"order","field":"currency","id":"inj-0161","injected":"currency_code","key":"O003239","original":"currency","store":"postgres","type":"schema_drift"}
+{"entity_type":"batch","field":null,"id":"inj-0162","injected":"BD813373","key":"B000463","original":"B000463","store":"postgres","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0163","injected":"email_address","key":"C001846","original":"email","store":"mongodb","type":"schema_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0164","injected":"CD901950","key":"C001218","original":"C001218","store":"mongodb","type":"duplicate"}
+{"entity_type":"order","field":"amount","id":"inj-0165","injected":621.97,"key":"O002329","original":"621.97","store":"dynamodb","type":"type_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0166","injected":"CX639244","key":"O000247","original":"C001012","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"order","field":null,"id":"inj-0167","injected":null,"key":"O000408","original":{"amount_cents":75417,"currency":"USD","customer_id":"C003348","id":"O000408","ordered_at":"2025-11-27 05:27:10+00:00","status":"refunded","updated_at":"2025-12-31 03:23:03+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":null,"id":"inj-0168","injected":null,"key":"C000852","original":{"country":"IN","customer_id":"C000852","email":"tara.eriksen852@example.com","name":"Tara Eriksen","phone":"+1-555-770-7387","updated_at":"2025-03-31 01:45:08+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0169","injected":"email_address","key":"C000866","original":"email","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"order","field":"currency","id":"inj-0170","injected":"currency_code","key":"O002705","original":"currency","store":"dynamodb","type":"schema_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0171","injected":2066,"key":"B000322","original":2050,"store":"cosmosdb","type":"stale"}
+{"entity_type":"customer","field":"phone","id":"inj-0173","injected":"phone_number","key":"C001845","original":"phone","store":"mongodb","type":"schema_drift"}
+{"entity_type":"batch","field":null,"id":"inj-0175","injected":null,"key":"B000475","original":{"batch_id":"B000475","expires_at":"2026-07-24 17:04:59+00:00","produced_at":"2025-01-01 17:04:59+00:00","quantity":654,"sku":"SKU-0219","updated_at":"2025-10-18 23:53:17+00:00","warehouse":"WH-WEST","weight_kg":73.252},"store":"adls_parquet","type":"missing"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0177","injected":3649,"key":"O002881","original":364923,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0178","injected":4818,"key":"O000293","original":481877,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"amount","id":"inj-0179","injected":2328.51,"key":"O000957","original":"2328.51","store":"s3_parquet","type":"type_drift"}
+{"entity_type":"order","field":"order_status","id":"inj-0180","injected":"shipped","key":"O003226","original":"cancelled","store":"dynamodb","type":"stale"}
+{"entity_type":"batch","field":"weight_kg","id":"inj-0182","injected":"1308.662","key":"B000461","original":1308.662,"store":"postgres","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0184","injected":"1045.0","key":"B000147","original":1045,"store":"cosmosdb","type":"type_drift"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0187","injected":"46775","key":"O003069","original":46775,"store":"postgres","type":"type_drift"}
+{"entity_type":"order","field":"status","id":"inj-0188","injected":"paid","key":"O002335","original":"shipped","store":"s3_parquet","type":"stale"}
+{"entity_type":"order","field":null,"id":"inj-0190","injected":null,"key":"O001248","original":{"amount_cents":4394,"currency":"USD","customer_id":"C003370","id":"O001248","ordered_at":"2025-10-12 14:20:36+00:00","status":"pending","updated_at":"2025-11-26 01:17:39+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"order","field":null,"id":"inj-0191","injected":"OD988467","key":"O001652","original":"O001652","store":"postgres","type":"duplicate"}
+{"entity_type":"batch","field":"sku","id":"inj-0192","injected":"sku_code","key":"B001105","original":"sku","store":"postgres","type":"schema_drift"}
+{"entity_type":"customer","field":"name","id":"inj-0195","injected":"Aa Garcia","key":"C003008","original":"Ada Garcia","store":"mongodb","type":"typo"}
+{"entity_type":"customer","field":"name","id":"inj-0196","injected":"Zoe Abbotyt","key":"C003425","original":"Zoe Abbott","store":"s3_parquet","type":"typo"}
+{"entity_type":"order","field":"amount","id":"inj-0197","injected":2328.47,"key":"O003368","original":"2328.47","store":"s3_parquet","type":"type_drift"}
+{"entity_type":"order","field":null,"id":"inj-0198","injected":"OD042185","key":"O002360","original":"O002360","store":"dynamodb","type":"duplicate"}
+{"entity_type":"batch","field":"warehouse","id":"inj-0199","injected":"warehouse_code","key":"B001062","original":"warehouse","store":"postgres","type":"schema_drift"}
+{"entity_type":"customer","field":"name","id":"inj-0200","injected":"TaraGarcia","key":"C001812","original":"Tara Garcia","store":"s3_parquet","type":"typo"}
+{"entity_type":"customer","field":"phone","id":"inj-0201","injected":"phone_number","key":"C001786","original":"phone","store":"postgres","type":"schema_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0202","injected":"CD515611","key":"C003337","original":"C003337","store":"postgres","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0203","injected":"jun.chen1425@legacy.example.com","key":"C001425","original":"jun.chen1425@corp.example.com","store":"mongodb","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0204","injected":"zoe.baker1136@example.com","key":"C001316","original":"zoe.baker1316@example.com","store":"hubspot","type":"typo"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0205","injected":1839.907,"key":"B000676","original":4056.2958,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"order","field":"dealstage","id":"inj-0206","injected":"closedwon","key":"O002842","original":"closedlost","store":"hubspot","type":"stale"}
+{"entity_type":"customer","field":null,"id":"inj-0207","injected":null,"key":"C003872","original":{"country_code":"DE","email":"ximena.baker3872@example.net","full_name":"Ximena Baker","id":"C003872","phone":"+1-555-770-3911","updated_at":"2025-06-20 19:17:20+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":"name","id":"inj-0208","injected":"Zoe Younog","key":"C003332","original":"Zoe Young","store":"mongodb","type":"typo"}
+{"entity_type":"batch","field":"site","id":"inj-0209","injected":"warehouse_code","key":"B000645","original":"site","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"order","field":"amount","id":"inj-0210","injected":3374.63,"key":"O001323","original":"3374.63","store":"dynamodb","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0211","injected":2390,"key":"B001986","original":2340,"store":"cosmosdb","type":"stale"}
+{"entity_type":"order","field":"customer_id","id":"inj-0212","injected":"CX001206","key":"O003382","original":"C001568","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"order","field":"customer_id","id":"inj-0213","injected":"CX433321","key":"O001895","original":"C003719","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"customer","field":"email","id":"inj-0215","injected":"hana.garcia2u551@example.net","key":"C002551","original":"hana.garcia2551@example.net","store":"hubspot","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0217","injected":"email_address","key":"C001092","original":"email","store":"dynamodb","type":"schema_drift"}
+{"entity_type":"order","field":null,"id":"inj-0218","injected":null,"key":"O000537","original":{"_id":"O000537","currency":"USD","customerId":"C000652","orderedAt":"2025-10-08 06:07:16+00:00","status":"pending","total":"1057.26","updatedAt":"2025-11-25 21:12:36+00:00"},"store":"mongodb","type":"missing"}
+{"entity_type":"order","field":null,"id":"inj-0219","injected":null,"key":"O001793","original":{"amount":"1081.07","currency":"USD","customer_id":"C001389","order_status":"pending","ordered_at":"2025-03-06 03:52:53+00:00","pk":"ORDER#O001793","updated_at":"2025-08-19 22:35:23+00:00"},"store":"dynamodb","type":"missing"}
+{"entity_type":"batch","field":"qty","id":"inj-0220","injected":"1989.0","key":"B000249","original":1989,"store":"postgres","type":"type_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0221","injected":"CX660626","key":"O003986","original":"C003181","store":"dynamodb","type":"orphaned"}
+{"entity_type":"order","field":"currency","id":"inj-0222","injected":"currency_code","key":"O003275","original":"currency","store":"postgres","type":"schema_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0223","injected":"yusuf.chen2907@legacy.example.com","key":"C002907","original":"yusuf.chen2907@example.org","store":"dynamodb","type":"stale"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0224","injected":489,"key":"O002259","original":48982,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"batch","field":"quantity","id":"inj-0225","injected":4591,"key":"B001136","original":4564,"store":"adls_parquet","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0226","injected":"wen.singh3446@legacy.example.com","key":"C003446","original":"wen.singh3446@example.net","store":"dynamodb","type":"stale"}
+{"entity_type":"customer","field":null,"id":"inj-0227","injected":null,"key":"C003879","original":{"_id":"C003879","country":"BR","email":"ada.quist3879@corp.example.com","name":"Ada Quist","phone":"+1-555-967-7853","updatedAt":"2025-12-30 02:20:29+00:00"},"store":"mongodb","type":"missing"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0228","injected":1590.816,"key":"B001326","original":3507.1448,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"order","field":null,"id":"inj-0230","injected":null,"key":"O001980","original":{"amount":"4631.25","currency":"USD","customer_id":"C001814","order_id":"O001980","ordered_at":"2025-12-01 21:14:18+00:00","status":"cancelled","updated_at":"2025-12-24 00:46:03+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0231","injected":"kofi.sinh1870@corp.example.com","key":"C001870","original":"kofi.singh1870@corp.example.com","store":"mongodb","type":"typo"}
+{"entity_type":"batch","field":null,"id":"inj-0233","injected":"BD782544","key":"B001040","original":"B001040","store":"postgres","type":"duplicate"}
+{"entity_type":"order","field":"status","id":"inj-0234","injected":"paid","key":"O000286","original":"refunded","store":"s3_parquet","type":"stale"}
+{"entity_type":"customer","field":"full_name","id":"inj-0236","injected":"xen Garcia","key":"C001095","original":"Ben Garcia","store":"postgres","type":"typo"}
+{"entity_type":"order","field":"amount","id":"inj-0237","injected":4513.63,"key":"O003430","original":"4513.63","store":"dynamodb","type":"type_drift"}
+{"entity_type":"batch","field":null,"id":"inj-0238","injected":"BD691998","key":"B001186","original":"B001186","store":"postgres","type":"duplicate"}
+{"entity_type":"order","field":null,"id":"inj-0239","injected":"OD468238","key":"O000609","original":"O000609","store":"s3_parquet","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0240","injected":"wen.boaker1413@example.net","key":"C001413","original":"wen.baker1413@example.net","store":"mongodb","type":"typo"}
+{"entity_type":"customer","field":null,"id":"inj-0241","injected":"CD197816","key":"C003562","original":"C003562","store":"hubspot","type":"duplicate"}
+{"entity_type":"batch","field":null,"id":"inj-0242","injected":"BD244907","key":"B000784","original":"B000784","store":"postgres","type":"duplicate"}
+{"entity_type":"batch","field":"sku","id":"inj-0243","injected":"sku_code","key":"B000655","original":"sku","store":"adls_parquet","type":"schema_drift"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0244","injected":866,"key":"O002890","original":86656,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0245","injected":"CD404832","key":"C001562","original":"C001562","store":"s3_parquet","type":"duplicate"}
+{"entity_type":"batch","field":"warehouse","id":"inj-0246","injected":"warehouse_code","key":"B001973","original":"warehouse","store":"postgres","type":"schema_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0247","injected":"CX526690","key":"O000517","original":"C002275","store":"dynamodb","type":"orphaned"}
+{"entity_type":"batch","field":null,"id":"inj-0248","injected":null,"key":"B000679","original":{"expires_at":"2026-10-27 23:29:05+00:00","id":"B000679","produced_at":"2025-02-19 23:29:05+00:00","qty":3859,"sku":"SKU-0100","updated_at":"2025-02-27 15:12:31+00:00","warehouse":"WH-WEST","weight_kg":1630.834},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0249","injected":"wen.fischer35d79@example.org","key":"C003579","original":"wen.fischer3579@example.org","store":"cosmosdb","type":"typo"}
+{"entity_type":"order","field":"status","id":"inj-0250","injected":"paid","key":"O003732","original":"refunded","store":"mongodb","type":"stale"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0251","injected":"CX913239","key":"O001680","original":"C001415","store":"hubspot","type":"orphaned"}
+{"entity_type":"order","field":"amount","id":"inj-0252","injected":3506.73,"key":"O003976","original":"3506.73","store":"s3_parquet","type":"type_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0253","injected":null,"key":"C000307","original":{"_updated":"2025-11-09 02:40:12+00:00","country":"CA","displayName":"Priya Abbott","email":"priya.abbott307@example.net","id":"C000307","phone":"+1-555-667-7044"},"store":"cosmosdb","type":"missing"}
+{"entity_type":"customer","field":null,"id":"inj-0254","injected":null,"key":"C003201","original":{"_id":"C003201","country":"AU","email":"dev.lopez3201@corp.example.com","name":"Dev Lopez","phone":"+1-555-145-9099","updatedAt":"2025-09-07 10:55:11+00:00"},"store":"mongodb","type":"missing"}
+{"entity_type":"order","field":"customerId","id":"inj-0255","injected":"CX653534","key":"O001388","original":"C001140","store":"mongodb","type":"orphaned"}
+{"entity_type":"order","field":"currency","id":"inj-0256","injected":"currency_code","key":"O001630","original":"currency","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0257","injected":"CD893140","key":"C000329","original":"C000329","store":"postgres","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0259","injected":"ada.zhou2944@legacy.example.com","key":"C002944","original":"ada.zhou2944@example.com","store":"postgres","type":"stale"}
+{"entity_type":"order","field":"status","id":"inj-0260","injected":"pending","key":"O002220","original":"cancelled","store":"s3_parquet","type":"stale"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0261","injected":"CX717644","key":"O002586","original":"C002542","store":"hubspot","type":"orphaned"}
+{"entity_type":"customer","field":"firstname","id":"inj-0262","injected":"Wden Zhou","key":"C000932","original":"Wen Zhou","store":"hubspot","type":"typo"}
+{"entity_type":"order","field":"amount","id":"inj-0263","injected":1867.83,"key":"O002887","original":"1867.83","store":"s3_parquet","type":"type_drift"}
+{"entity_type":"batch","field":"sku","id":"inj-0264","injected":"sku_code","key":"B000909","original":"sku","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0265","injected":"CD314012","key":"C002842","original":"C002842","store":"cosmosdb","type":"duplicate"}
+{"entity_type":"order","field":"customer_id","id":"inj-0266","injected":"CX834816","key":"O001327","original":"C000537","store":"dynamodb","type":"orphaned"}
+{"entity_type":"customer","field":"displayName","id":"inj-0267","injected":"Ada Ynung","key":"C001201","original":"Ada Young","store":"cosmosdb","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0268","injected":"email_address","key":"C001000","original":"email","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"customer","field":"full_name","id":"inj-0269","injected":"LenaXu","key":"C001687","original":"Lena Xu","store":"postgres","type":"typo"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0270","injected":"CX082804","key":"O000718","original":"C001548","store":"hubspot","type":"orphaned"}
+{"entity_type":"order","field":"currency","id":"inj-0271","injected":"currency_code","key":"O003568","original":"currency","store":"postgres","type":"schema_drift"}
+{"entity_type":"order","field":null,"id":"inj-0272","injected":null,"key":"O002539","original":{"amount":"671.87","associated_contact_id":"C003968","createdate":"2025-02-24 05:40:13+00:00","deal_currency_code":"USD","dealstage":"closedwon","id":"O002539","lastmodifieddate":"2025-06-08 06:06:15+00:00"},"store":"hubspot","type":"missing"}
+{"entity_type":"customer","field":null,"id":"inj-0273","injected":null,"key":"C000985","original":{"country_code":"AU","email":"wen.ito985@example.net","full_name":"Wen Ito","id":"C000985","phone":"+1-555-639-7779","updated_at":"2025-03-23 11:54:02+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0275","injected":1732.677,"key":"B000476","original":3819.8944,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0276","injected":"CD266314","key":"C002612","original":"C002612","store":"mongodb","type":"duplicate"}
+{"entity_type":"order","field":null,"id":"inj-0277","injected":"OD009853","key":"O002731","original":"O002731","store":"dynamodb","type":"duplicate"}
+{"entity_type":"order","field":null,"id":"inj-0278","injected":"OD573149","key":"O002774","original":"O002774","store":"dynamodb","type":"duplicate"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0280","injected":76,"key":"O002409","original":7656,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":"email","id":"inj-0281","injected":"email_address","key":"C002618","original":"email","store":"hubspot","type":"schema_drift"}
+{"entity_type":"order","field":"amount","id":"inj-0283","injected":873.36,"key":"O001871","original":"873.36","store":"dynamodb","type":"type_drift"}
+{"entity_type":"order","field":null,"id":"inj-0284","injected":"OD208894","key":"O001238","original":"O001238","store":"s3_parquet","type":"duplicate"}
+{"entity_type":"order","field":"status","id":"inj-0285","injected":"pending","key":"O001982","original":"refunded","store":"s3_parquet","type":"stale"}
+{"entity_type":"order","field":"customer_id","id":"inj-0286","injected":"CX376395","key":"O002345","original":"C003466","store":"postgres","type":"orphaned"}
+{"entity_type":"order","field":"status","id":"inj-0288","injected":"paid","key":"O001212","original":"pending","store":"postgres","type":"stale"}
+{"entity_type":"order","field":null,"id":"inj-0289","injected":null,"key":"O000034","original":{"amount":"2316.34","currency":"USD","customer_id":"C003488","order_status":"cancelled","ordered_at":"2025-07-20 22:44:52+00:00","pk":"ORDER#O000034","updated_at":"2025-11-12 18:18:39+00:00"},"store":"dynamodb","type":"missing"}
+{"entity_type":"batch","field":"qty","id":"inj-0290","injected":2131,"key":"B001770","original":2087,"store":"postgres","type":"stale"}
+{"entity_type":"batch","field":null,"id":"inj-0291","injected":"BD520856","key":"B001525","original":"B001525","store":"postgres","type":"duplicate"}
+{"entity_type":"customer","field":null,"id":"inj-0292","injected":"CD241296","key":"C003271","original":"C003271","store":"s3_parquet","type":"duplicate"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0293","injected":659.236,"key":"B001303","original":1453.3649,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0294","injected":"CD262801","key":"C002543","original":"C002543","store":"dynamodb","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0296","injected":"elena.diaz2650@legacy.example.com","key":"C002650","original":"elena.diaz2650@example.com","store":"postgres","type":"stale"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0297","injected":460,"key":"O003232","original":46057,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0298","injected":null,"key":"C000137","original":{"_id":"C000137","country":"AU","email":"zoe.usman137@example.org","name":"Zoe Usman","phone":"+1-555-535-2880","updatedAt":"2025-03-29 07:22:33+00:00"},"store":"mongodb","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0299","injected":"CX767934","key":"O001495","original":"C003302","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"customer","field":"name","id":"inj-0300","injected":"OmarxYoung","key":"C000370","original":"Omar Young","store":"dynamodb","type":"typo"}
+{"entity_type":"customer","field":"full_name","id":"inj-0303","injected":"Viktof Chen","key":"C003591","original":"Viktor Chen","store":"postgres","type":"typo"}
+{"entity_type":"order","field":"order_status","id":"inj-0304","injected":"paid","key":"O003742","original":"refunded","store":"dynamodb","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0305","injected":"jun.cehn3564@corp.example.com","key":"C003564","original":"jun.chen3564@corp.example.com","store":"s3_parquet","type":"typo"}
+{"entity_type":"order","field":"customer_id","id":"inj-0306","injected":"CX078957","key":"O003946","original":"C003029","store":"postgres","type":"orphaned"}
+{"entity_type":"customer","field":"name","id":"inj-0307","injected":"Gusz Zhou","key":"C003088","original":"Gus Zhou","store":"dynamodb","type":"typo"}
+{"entity_type":"batch","field":"weight_kg","id":"inj-0310","injected":"113.514","key":"B000254","original":113.514,"store":"postgres","type":"type_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0311","injected":"omar.usmans510@example.net","key":"C001510","original":"omar.usman1510@example.net","store":"mongodb","type":"typo"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0312","injected":607,"key":"O003370","original":60724,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0313","injected":null,"key":"C003853","original":{"country_code":"BR","email":"kofi.mensah3853@example.net","full_name":"Kofi Mensah","id":"C003853","phone":"+1-555-390-5478","updated_at":"2025-06-17 17:59:43+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0314","injected":"rosa.chen444@legacy.example.com","key":"C000444","original":"rosa.chen444@example.net","store":"hubspot","type":"stale"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0315","injected":1811,"key":"O000104","original":181163,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"batch","field":null,"id":"inj-0317","injected":"BD679112","key":"B000454","original":"B000454","store":"postgres","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0318","injected":"email_address","key":"C003373","original":"email","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0319","injected":null,"key":"C003725","original":{"_id":"C003725","country":"IN","email":"tara.singh3725@example.net","name":"Tara Singh","phone":"+1-555-485-8045","updatedAt":"2025-12-18 20:51:36+00:00"},"store":"mongodb","type":"missing"}
+{"entity_type":"order","field":null,"id":"inj-0320","injected":null,"key":"O001240","original":{"amount_cents":152525,"currency":"USD","customer_id":"C002495","id":"O001240","ordered_at":"2025-12-16 22:47:14+00:00","status":"paid","updated_at":"2025-12-20 19:27:03+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"batch","field":"sku","id":"inj-0322","injected":"sku_code","key":"B001941","original":"sku","store":"adls_parquet","type":"schema_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0323","injected":425,"key":"B000627","original":393,"store":"adls_parquet","type":"stale"}
+{"entity_type":"batch","field":null,"id":"inj-0324","injected":null,"key":"B000481","original":{"_updated":"2025-12-21 22:40:40+00:00","expiresAt":"2027-01-11 02:08:58+00:00","id":"B000481","producedAt":"2025-12-20 02:08:58+00:00","quantity":1456,"site":"WH-EAST","sku":"SKU-0029","weightLb":4017.6885},"store":"cosmosdb","type":"missing"}
+{"entity_type":"order","field":"deal_currency_code","id":"inj-0326","injected":"currency_code","key":"O002748","original":"deal_currency_code","store":"hubspot","type":"schema_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0328","injected":"farah.isngh633@example.org","key":"C000633","original":"farah.singh633@example.org","store":"s3_parquet","type":"typo"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0329","injected":3513,"key":"O002524","original":351333,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":null,"id":"inj-0330","injected":"OD997742","key":"O003847","original":"O003847","store":"hubspot","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0333","injected":"fardh.rossi1822@example.org","key":"C001822","original":"farah.rossi1822@example.org","store":"mongodb","type":"typo"}
+{"entity_type":"order","field":"customerId","id":"inj-0334","injected":"CX945497","key":"O002230","original":"C003046","store":"mongodb","type":"orphaned"}
+{"entity_type":"customer","field":null,"id":"inj-0335","injected":null,"key":"C001471","original":{"country_code":"GB","email":"mateo.fischer1471@example.com","full_name":"Mateo Fischer","id":"C001471","phone":"+1-555-471-1162","updated_at":"2025-05-19 23:44:43+00:00"},"store":"postgres","type":"missing"}
+{"entity_type":"batch","field":null,"id":"inj-0336","injected":"BD289282","key":"B000819","original":"B000819","store":"adls_parquet","type":"duplicate"}
+{"entity_type":"batch","field":"sku","id":"inj-0337","injected":"sku_code","key":"B001944","original":"sku","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0339","injected":"CX670556","key":"O002630","original":"C001528","store":"hubspot","type":"orphaned"}
+{"entity_type":"batch","field":null,"id":"inj-0340","injected":null,"key":"B001985","original":{"expires_at":"2026-08-20 14:19:46+00:00","id":"B001985","produced_at":"2025-06-05 14:19:46+00:00","qty":1067,"sku":"SKU-0155","updated_at":"2025-10-01 00:19:05+00:00","warehouse":"WH-SOUTH","weight_kg":420.862},"store":"postgres","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0341","injected":"CX825013","key":"O000208","original":"C002667","store":"dynamodb","type":"orphaned"}
+{"entity_type":"customer","field":null,"id":"inj-0342","injected":"CD132040","key":"C000998","original":"C000998","store":"hubspot","type":"duplicate"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0344","injected":574.325,"key":"B001201","original":1266.1684,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"customer","field":"email","id":"inj-0345","injected":"farah.rossi339@example.net","key":"C003329","original":"farah.rossi3329@example.net","store":"dynamodb","type":"typo"}
+{"entity_type":"order","field":"currency","id":"inj-0347","injected":"currency_code","key":"O000012","original":"currency","store":"postgres","type":"schema_drift"}
+{"entity_type":"order","field":null,"id":"inj-0348","injected":"OD151716","key":"O003515","original":"O003515","store":"dynamodb","type":"duplicate"}
+{"entity_type":"batch","field":"sku","id":"inj-0350","injected":"sku_code","key":"B001354","original":"sku","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0351","injected":"1150.0","key":"B000270","original":1150,"store":"adls_parquet","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0352","injected":"1053.0","key":"B000737","original":1053,"store":"adls_parquet","type":"type_drift"}
+{"entity_type":"customer","field":"phone","id":"inj-0353","injected":"phone_number","key":"C002411","original":"phone","store":"dynamodb","type":"schema_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0354","injected":"kobi.zhou65@corp.example.com","key":"C000065","original":"kofi.zhou65@corp.example.com","store":"hubspot","type":"typo"}
+{"entity_type":"customer","field":null,"id":"inj-0355","injected":null,"key":"C003037","original":{"_updated":"2025-02-05 14:23:10+00:00","country":"CA","displayName":"Omar Usman","email":"omar.usman3037@corp.example.com","id":"C003037","phone":"+1-555-929-1586"},"store":"cosmosdb","type":"missing"}
+{"entity_type":"order","field":"total","id":"inj-0356","injected":1290.91,"key":"O002153","original":"1290.91","store":"mongodb","type":"type_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0358","injected":null,"key":"C001483","original":{"country":"CA","customer_id":"C001483","email":"elena.quist1483@corp.example.com","name":"Elena Quist","phone":"+1-555-314-2333","updated_at":"2025-11-04 04:37:42+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"order","field":null,"id":"inj-0361","injected":null,"key":"O003873","original":{"_id":"O003873","currency":"USD","customerId":"C000784","orderedAt":"2025-09-10 17:54:06+00:00","status":"paid","total":"1672.16","updatedAt":"2025-11-10 10:04:38+00:00"},"store":"mongodb","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0362","injected":"viktor.meunsah178@example.net","key":"C000178","original":"viktor.mensah178@example.net","store":"postgres","type":"typo"}
+{"entity_type":"batch","field":"warehouse","id":"inj-0363","injected":"warehouse_code","key":"B000125","original":"warehouse","store":"adls_parquet","type":"schema_drift"}
+{"entity_type":"batch","field":"qty","id":"inj-0364","injected":"178.0","key":"B001732","original":178,"store":"postgres","type":"type_drift"}
+{"entity_type":"order","field":"dealstage","id":"inj-0365","injected":"appointmentscheduled","key":"O001747","original":"contractsent","store":"hubspot","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0367","injected":"yusuf.usmn1319@example.org","key":"C001319","original":"yusuf.usman1319@example.org","store":"cosmosdb","type":"typo"}
+{"entity_type":"batch","field":"quantity","id":"inj-0368","injected":1960,"key":"B000565","original":1920,"store":"cosmosdb","type":"stale"}
+{"entity_type":"customer","field":"full_name","id":"inj-0369","injected":"Quinnt Diaz","key":"C002919","original":"Quinn Diaz","store":"postgres","type":"typo"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0370","injected":3298,"key":"O001862","original":329819,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0371","injected":4122,"key":"O000409","original":412260,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0372","injected":"CD119971","key":"C002875","original":"C002875","store":"s3_parquet","type":"duplicate"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0374","injected":2170,"key":"O003640","original":217033,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":"email","id":"inj-0375","injected":"ximena.abbmott1694@corp.example.com","key":"C001694","original":"ximena.abbott1694@corp.example.com","store":"dynamodb","type":"typo"}
+{"entity_type":"order","field":"total","id":"inj-0376","injected":2128.9,"key":"O002988","original":"2128.9","store":"mongodb","type":"type_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0378","injected":"nia.tanaka1046@legacy.example.com","key":"C001046","original":"nia.tanaka1046@example.org","store":"postgres","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0380","injected":"priya.tanaka276@legacy.example.com","key":"C000276","original":"priya.tanaka276@example.com","store":"mongodb","type":"stale"}
+{"entity_type":"customer","field":"email","id":"inj-0381","injected":"ada.mesnah383@example.net","key":"C000383","original":"ada.mensah383@example.net","store":"cosmosdb","type":"typo"}
+{"entity_type":"order","field":"customerId","id":"inj-0382","injected":"CX136435","key":"O003325","original":"C002795","store":"mongodb","type":"orphaned"}
+{"entity_type":"batch","field":"weight_kg","id":"inj-0383","injected":"1615.867","key":"B000123","original":1615.867,"store":"postgres","type":"type_drift"}
+{"entity_type":"customer","field":"phone","id":"inj-0384","injected":"phone_number","key":"C003922","original":"phone","store":"postgres","type":"schema_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0385","injected":"email_address","key":"C002302","original":"email","store":"postgres","type":"schema_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0386","injected":null,"key":"C002744","original":{"country":"NG","email":"jun.abbott2744@example.org","firstname":"Jun Abbott","id":"C002744","lastmodifieddate":"2025-03-17 05:04:54+00:00","phone":"+1-555-299-7854"},"store":"hubspot","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0387","injected":"CX370774","key":"O001682","original":"C003114","store":"dynamodb","type":"orphaned"}
+{"entity_type":"order","field":null,"id":"inj-0389","injected":null,"key":"O003753","original":{"amount":"4159.73","currency":"USD","customer_id":"C000034","order_id":"O003753","ordered_at":"2025-12-29 05:24:39+00:00","status":"paid","updated_at":"2025-12-30 22:44:47+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0391","injected":1863.384,"key":"B001184","original":4108.0536,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"batch","field":"weight_kg","id":"inj-0392","injected":"1531.152","key":"B000436","original":1531.152,"store":"postgres","type":"type_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0393","injected":"tara.tanaka2689@legacy.example.com","key":"C002689","original":"tara.tanaka2689@example.net","store":"cosmosdb","type":"stale"}
+{"entity_type":"customer","field":"phone","id":"inj-0394","injected":"phone_number","key":"C003469","original":"phone","store":"dynamodb","type":"schema_drift"}
+{"entity_type":"order","field":"status","id":"inj-0396","injected":"shipped","key":"O002281","original":"pending","store":"s3_parquet","type":"stale"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0397","injected":3546,"key":"O002355","original":354659,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":null,"id":"inj-0398","injected":null,"key":"C003305","original":{"country":"BR","email":"tara.abbott3305@example.net","name":"Tara Abbott","phone":"+1-555-891-4189","pk":"CUSTOMER#C003305","updated_at":"2025-06-12 23:47:53+00:00"},"store":"dynamodb","type":"missing"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0399","injected":834,"key":"O003464","original":83437,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"batch","field":"weight_kg","id":"inj-0400","injected":"1289.411","key":"B001993","original":1289.411,"store":"postgres","type":"type_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0401","injected":null,"key":"C003350","original":{"country":"DE","customer_id":"C003350","email":"ivan.jensen3350@example.org","name":"Ivan Jensen","phone":"+1-555-660-5974","updated_at":"2025-05-04 11:13:27+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0402","injected":"CX707764","key":"O002516","original":"C002504","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"customer","field":"email","id":"inj-0403","injected":"email_address","key":"C002281","original":"email","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"batch","field":null,"id":"inj-0404","injected":"BD974215","key":"B001251","original":"B001251","store":"adls_parquet","type":"duplicate"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0405","injected":1381.159,"key":"B000370","original":3044.9308,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"order","field":null,"id":"inj-0406","injected":null,"key":"O002877","original":{"amount":"2934.04","currency":"USD","customer_id":"C000199","order_status":"cancelled","ordered_at":"2025-09-12 18:01:51+00:00","pk":"ORDER#O002877","updated_at":"2025-10-21 04:18:54+00:00"},"store":"dynamodb","type":"missing"}
+{"entity_type":"order","field":"customerId","id":"inj-0407","injected":"CX356331","key":"O003775","original":"C003447","store":"mongodb","type":"orphaned"}
+{"entity_type":"order","field":"customerId","id":"inj-0408","injected":"CX190217","key":"O000026","original":"C002340","store":"mongodb","type":"orphaned"}
+{"entity_type":"order","field":null,"id":"inj-0409","injected":null,"key":"O000587","original":{"amount":"1174.9","currency":"USD","customer_id":"C000947","order_id":"O000587","ordered_at":"2025-12-13 23:42:09+00:00","status":"shipped","updated_at":"2025-12-31 03:14:01+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0410","injected":"sven.tnaaka2695@corp.example.com","key":"C002695","original":"sven.tanaka2695@corp.example.com","store":"postgres","type":"typo"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0411","injected":"CX663928","key":"O003037","original":"C001826","store":"hubspot","type":"orphaned"}
+{"entity_type":"customer","field":null,"id":"inj-0415","injected":null,"key":"C001515","original":{"_updated":"2025-12-17 22:02:45+00:00","country":"BR","displayName":"Dev Eriksen","email":"dev.eriksen1515@corp.example.com","id":"C001515","phone":"+1-555-589-2126"},"store":"cosmosdb","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0416","injected":"email_address","key":"C002956","original":"email","store":"hubspot","type":"schema_drift"}
+{"entity_type":"order","field":"amount","id":"inj-0417","injected":3691.42,"key":"O003183","original":"3691.42","store":"hubspot","type":"type_drift"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0418","injected":"150777","key":"O002445","original":150777,"store":"postgres","type":"type_drift"}
+{"entity_type":"batch","field":null,"id":"inj-0419","injected":null,"key":"B001810","original":{"_updated":"2025-10-21 06:47:17+00:00","expiresAt":"2026-09-28 11:21:46+00:00","id":"B001810","producedAt":"2025-04-11 11:21:46+00:00","quantity":1655,"site":"WH-SOUTH","sku":"SKU-0146","weightLb":2639.1815},"store":"cosmosdb","type":"missing"}
+{"entity_type":"batch","field":"quantity","id":"inj-0420","injected":"4956.0","key":"B000318","original":4956,"store":"adls_parquet","type":"type_drift"}
+{"entity_type":"customer","field":"name","id":"inj-0421","injected":"Elena Garica","key":"C003089","original":"Elena Garcia","store":"dynamodb","type":"typo"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0422","injected":273.668,"key":"B001356","original":603.3339,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"order","field":null,"id":"inj-0423","injected":null,"key":"O001990","original":{"amount":"4804.98","associated_contact_id":"C002676","createdate":"2025-12-16 21:59:11+00:00","deal_currency_code":"USD","dealstage":"closedwon","id":"O001990","lastmodifieddate":"2025-12-23 21:25:13+00:00"},"store":"hubspot","type":"missing"}
+{"entity_type":"customer","field":"email","id":"inj-0425","injected":"ximena.abbott309l1@example.com","key":"C003091","original":"ximena.abbott3091@example.com","store":"dynamodb","type":"typo"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0426","injected":1645,"key":"O000457","original":164507,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"order_status","id":"inj-0427","injected":"shipped","key":"O002776","original":"pending","store":"dynamodb","type":"stale"}
+{"entity_type":"order","field":"amount","id":"inj-0428","injected":3444.63,"key":"O001264","original":"3444.63","store":"s3_parquet","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0429","injected":4585,"key":"B000452","original":4559,"store":"adls_parquet","type":"stale"}
+{"entity_type":"batch","field":null,"id":"inj-0430","injected":"BD316061","key":"B000419","original":"B000419","store":"adls_parquet","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0431","injected":"email_address","key":"C003131","original":"email","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"customer","field":"firstname","id":"inj-0432","injected":"ChloeT anaka","key":"C001185","original":"Chloe Tanaka","store":"hubspot","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0434","injected":"ben.jensen531@legacy.example.com","key":"C000531","original":"ben.jensen531@example.org","store":"cosmosdb","type":"stale"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0435","injected":832.149,"key":"B001026","original":1834.5723,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"customer","field":"full_name","id":"inj-0436","injected":"ElenaX u","key":"C003415","original":"Elena Xu","store":"postgres","type":"typo"}
+{"entity_type":"order","field":null,"id":"inj-0437","injected":null,"key":"O003532","original":{"amount":"3340.55","associated_contact_id":"C003805","createdate":"2025-12-19 00:16:45+00:00","deal_currency_code":"USD","dealstage":"appointmentscheduled","id":"O003532","lastmodifieddate":"2025-12-20 08:49:58+00:00"},"store":"hubspot","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0438","injected":"CX019651","key":"O001786","original":"C003066","store":"dynamodb","type":"orphaned"}
+{"entity_type":"order","field":"currency","id":"inj-0439","injected":"currency_code","key":"O003774","original":"currency","store":"mongodb","type":"schema_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0440","injected":"CX328267","key":"O003530","original":"C001507","store":"dynamodb","type":"orphaned"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0441","injected":3600,"key":"O002352","original":360075,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"customer_id","id":"inj-0442","injected":"CX671237","key":"O002909","original":"C001584","store":"postgres","type":"orphaned"}
+{"entity_type":"order","field":null,"id":"inj-0443","injected":"OD120768","key":"O001186","original":"O001186","store":"hubspot","type":"duplicate"}
+{"entity_type":"order","field":"status","id":"inj-0446","injected":"paid","key":"O003770","original":"shipped","store":"postgres","type":"stale"}
+{"entity_type":"order","field":null,"id":"inj-0448","injected":"OD419902","key":"O002413","original":"O002413","store":"hubspot","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0449","injected":"wen.garcia162x@example.org","key":"C001622","original":"wen.garcia1622@example.org","store":"cosmosdb","type":"typo"}
+{"entity_type":"order","field":"amount","id":"inj-0450","injected":4713.92,"key":"O000908","original":"4713.92","store":"hubspot","type":"type_drift"}
+{"entity_type":"customer","field":"phone","id":"inj-0451","injected":"phone_number","key":"C003192","original":"phone","store":"hubspot","type":"schema_drift"}
+{"entity_type":"customer","field":"phone","id":"inj-0452","injected":"phone_number","key":"C000314","original":"phone","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0453","injected":1264.085,"key":"B001087","original":2786.8271,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"order","field":"deal_currency_code","id":"inj-0455","injected":"currency_code","key":"O002980","original":"deal_currency_code","store":"hubspot","type":"schema_drift"}
+{"entity_type":"order","field":"associated_contact_id","id":"inj-0457","injected":"CX107798","key":"O000968","original":"C002766","store":"hubspot","type":"orphaned"}
+{"entity_type":"customer","field":"email","id":"inj-0458","injected":"ada.singh1048@legacy.example.com","key":"C001048","original":"ada.singh1048@corp.example.com","store":"cosmosdb","type":"stale"}
+{"entity_type":"batch","field":"quantity","id":"inj-0459","injected":"1536.0","key":"B001234","original":1536,"store":"cosmosdb","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0460","injected":"170.0","key":"B001559","original":170,"store":"cosmosdb","type":"type_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0461","injected":null,"key":"C002685","original":{"country":"IN","customer_id":"C002685","email":"yusuf.zhou2685@example.com","name":"Yusuf Zhou","phone":"+1-555-142-2151","updated_at":"2025-02-11 17:36:53+00:00"},"store":"s3_parquet","type":"missing"}
+{"entity_type":"order","field":"customer_id","id":"inj-0462","injected":"CX997502","key":"O000726","original":"C000518","store":"dynamodb","type":"orphaned"}
+{"entity_type":"customer","field":"email","id":"inj-0463","injected":"email_address","key":"C002024","original":"email","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"order","field":"customer_id","id":"inj-0465","injected":"CX607616","key":"O003116","original":"C002424","store":"s3_parquet","type":"orphaned"}
+{"entity_type":"order","field":"customer_id","id":"inj-0466","injected":"CX969045","key":"O002792","original":"C003354","store":"postgres","type":"orphaned"}
+{"entity_type":"batch","field":null,"id":"inj-0467","injected":"BD666158","key":"B001312","original":"B001312","store":"postgres","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0468","injected":"email_address","key":"C001295","original":"email","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0469","injected":"email_address","key":"C001802","original":"email","store":"cosmosdb","type":"schema_drift"}
+{"entity_type":"batch","field":"qty","id":"inj-0471","injected":"4855.0","key":"B001289","original":4855,"store":"postgres","type":"type_drift"}
+{"entity_type":"customer","field":"email","id":"inj-0472","injected":"email_address","key":"C003262","original":"email","store":"hubspot","type":"schema_drift"}
+{"entity_type":"order","field":"customerId","id":"inj-0473","injected":"CX058900","key":"O002420","original":"C002255","store":"mongodb","type":"orphaned"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0474","injected":1187,"key":"O002081","original":118795,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"order","field":"customer_id","id":"inj-0475","injected":"CX484172","key":"O001271","original":"C001402","store":"dynamodb","type":"orphaned"}
+{"entity_type":"batch","field":"qty","id":"inj-0476","injected":"3953.0","key":"B000078","original":3953,"store":"postgres","type":"type_drift"}
+{"entity_type":"customer","field":"displayName","id":"inj-0477","injected":"OmarU sman","key":"C001510","original":"Omar Usman","store":"cosmosdb","type":"typo"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0479","injected":2208,"key":"O001899","original":220860,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"batch","field":"weightLb","id":"inj-0481","injected":919.197,"key":"B000660","original":2026.4801,"store":"cosmosdb","type":"unit_mismatch"}
+{"entity_type":"batch","field":null,"id":"inj-0482","injected":"BD525721","key":"B000972","original":"B000972","store":"postgres","type":"duplicate"}
+{"entity_type":"order","field":"currency","id":"inj-0484","injected":"currency_code","key":"O000346","original":"currency","store":"s3_parquet","type":"schema_drift"}
+{"entity_type":"batch","field":"weight_kg","id":"inj-0485","injected":"1789.019","key":"B001317","original":1789.019,"store":"postgres","type":"type_drift"}
+{"entity_type":"customer","field":null,"id":"inj-0487","injected":"CD459022","key":"C002897","original":"C002897","store":"dynamodb","type":"duplicate"}
+{"entity_type":"order","field":null,"id":"inj-0488","injected":"OD639427","key":"O002139","original":"O002139","store":"mongodb","type":"duplicate"}
+{"entity_type":"customer","field":"email","id":"inj-0489","injected":"yusuf.young152m@example.net","key":"C001527","original":"yusuf.young1527@example.net","store":"hubspot","type":"typo"}
+{"entity_type":"customer","field":"email","id":"inj-0491","injected":"viktor.mensah2781@legacy.example.com","key":"C002781","original":"viktor.mensah2781@example.net","store":"hubspot","type":"stale"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0492","injected":1747,"key":"O000271","original":174795,"store":"postgres","type":"unit_mismatch"}
+{"entity_type":"customer","field":"email","id":"inj-0493","injected":"lena.diajz388@example.org","key":"C000388","original":"lena.diaz388@example.org","store":"hubspot","type":"typo"}
+{"entity_type":"order","field":"customerId","id":"inj-0494","injected":"CX892931","key":"O002962","original":"C000874","store":"mongodb","type":"orphaned"}
+{"entity_type":"order","field":"amount","id":"inj-0495","injected":3777.4,"key":"O003955","original":"3777.4","store":"s3_parquet","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0497","injected":"4480.0","key":"B000684","original":4480,"store":"cosmosdb","type":"type_drift"}
+{"entity_type":"batch","field":"quantity","id":"inj-0498","injected":2491,"key":"B001194","original":2448,"store":"cosmosdb","type":"stale"}
+{"entity_type":"order","field":"amount_cents","id":"inj-0499","injected":1640,"key":"O001275","original":164026,"store":"postgres","type":"unit_mismatch"}
