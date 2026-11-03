@@ -1,4 +1,4 @@
-.PHONY: install lint fmt typecheck smoke test check
+.PHONY: install lint fmt typecheck smoke test check freeze verify-frozen
 
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
@@ -24,3 +24,9 @@ test:
 	uv run pytest
 
 check: lint typecheck smoke
+
+freeze:
+	uv run python -m xstore.synth.freeze --out evals/frozen/v1 --seed 42
+
+verify-frozen:
+	uv run python -m xstore.synth.freeze --out evals/frozen/v1 --verify
