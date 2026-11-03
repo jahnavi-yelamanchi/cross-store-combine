@@ -70,7 +70,7 @@ class MongoStore:
     def _claim(self, idempotency_key: str, session: Any) -> bool:
         res = self.applied.update_one(
             {"_id": idempotency_key},
-            {"$setOnInsert": {"_id": idempotency_key, "ts_ms": now_ms()}},
+            {"$setOnInsert": {"_id": idempotency_key, "claimed_at": datetime.now(UTC)}},
             upsert=True,
             session=session,
         )

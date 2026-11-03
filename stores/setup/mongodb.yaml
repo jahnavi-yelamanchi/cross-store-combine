@@ -19,10 +19,10 @@ checks:
     enforced_by: adapter creates it on startup
     command: 'db._xstore_outbox.createIndex({seq: 1}, {unique: true})'
   - id: applied-retention
-    what: "TTL index on _xstore_applied.ts_ms (optional)"
+    what: "TTL index on _xstore_applied.claimed_at (optional)"
     why: bound key table growth; TTL must exceed the longest replay window
     enforced_by: manual
-    command: 'db._xstore_applied.createIndex({ts_ms: 1}, {expireAfterSeconds: 2592000})'
+    command: 'db._xstore_applied.createIndex({claimed_at: 1}, {expireAfterSeconds: 2592000})'
   - id: least-privilege-user
     what: App user with readWrite on MONGO_DB only
     why: adapter never needs admin or other databases
