@@ -1,0 +1,37 @@
+{
+  "entities": {
+    "batch": 2000,
+    "customer": 4000,
+    "order": 4000
+  },
+  "holdout": 100,
+  "injections": {
+    "duplicate": 63,
+    "missing": 63,
+    "orphaned": 62,
+    "schema_drift": 62,
+    "stale": 63,
+    "type_drift": 62,
+    "typo": 63,
+    "unit_mismatch": 62
+  },
+  "labels": 400,
+  "records": {
+    "adls_parquet/batch": 2003,
+    "cosmosdb/batch": 1999,
+    "cosmosdb/customer": 3999,
+    "dynamodb/customer": 4002,
+    "dynamodb/order": 4002,
+    "hubspot/customer": 3999,
+    "hubspot/order": 4001,
+    "mongodb/customer": 3998,
+    "mongodb/order": 4001,
+    "postgres/batch": 2005,
+    "postgres/customer": 3997,
+    "postgres/order": 3998,
+    "s3_parquet/customer": 4000,
+    "s3_parquet/order": 3996
+  },
+  "seed": 42,
+  "sha256": "0330ae4513c6bf2e960ed23d8ffccd5a2b6c452bd804abc26db541265e06bfec"
+}
