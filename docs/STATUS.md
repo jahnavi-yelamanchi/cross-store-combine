@@ -1,5 +1,46 @@
 # Status
 
+## Day 2 (2026-11-05)
+
+Run mode: `STORE_BACKEND=local`, `MODEL_PROVIDER=mock`. All Day 2 PRs merged by the owner account.
+
+| Issue | PR | What |
+|---|---|---|
+| #33 eval workflows + Day 2 deps | #34 | eval-gate.yml, nightly-eval.yml, thresholds, `scripts/eval_gate.py` |
+| #29 proposals API | #35 | FastAPI approve/reject/approve-safe, evidence + lineage |
+| #28 policy engine | #36 | policy/policy.yaml, deterministic resolve, approved policy diffs |
+| #27 tiebreak agent | #37 | LangGraph + Instructor + MCP evidence tool; Haiku 5.5 default |
+| #26 Splink matcher | #38 | Fellegi-Sunter on DuckDB, EM, match/tiebreak bands |
+| #30 ledger | #39 | Append-only event-sourced ledger, idempotent apply, `make replay` |
+| #32 e2e + demo | #40 | `make demo-local`, `make e2e` |
+| #31 evals | #41 | Inspect AI task, promptfoo config, matrix runner, report + plot |
+
+### What runs
+- `make check` (ruff, mypy, 17 smoke tests), `make e2e` (1 test, ~1.4 s), `make demo-local` (recall 1.0, 10 fixes applied, 0 bad writes, replay ok).
+- `make match` (60,165 pairs, 214 in tiebreak, ~4 s), `make policy-check`, `make replay` (~85 s on full snapshot), `make eval` + `make report` (~32 s per split).
+- Holdout (simulated LLM): hybrid Haiku F1 0.952 at $0.0016/1k entities; Sonnet F1 0.980 at $0.032/1k; splink_only 0.873; bad-write rate 0.
+
+### Eval gate status: FAILING
+- Inspect tiebreak accuracy 0.78 vs threshold 0.90. MockProvider gives drifted same-key pairs confidence 0.5; validate step routes < 0.6 to "different, needs human". Not tuned away; needs recorded real fixtures (`python -m xstore.agent.record_fixtures`, real mode).
+- All other gate checks pass.
+
+### Deviations
+- GitHub Actions did not run: "account is locked due to a billing issue". No bot-authored PRs possible (bot-pr.yml needs Actions), so all PRs use the owner token (rule 2c) and no deliberate gaps were added (rule 2d applies to bot PRs only). `type:gap` labels on #26/#28/#30/#32 are moot.
+- Checks run locally before every merge: ruff, mypy, smoke, e2e.
+- No commits backdated; real timestamps only.
+- mcp 2.3 removed `mcp.server.fastmcp`; agent uses `mcp.server.mcpserver.MCPServer`.
+- Starlette TestClient is now httpx2-based; HubSpot adapter client typed as `Any`.
+
+### Needs keys (real mode, untested)
+- ANTHROPIC_API_KEY (tiebreak, fixture recording, promptfoo), OPENAI_API_KEY (optional provider; `openai` not a declared dep), DATABASE_URL (proposals, ledger + append-only trigger SQL), MONGO_URI/MONGO_DB.
+
+### Gaps
+- Day 1 known gaps from #21, #22, #25 still on main.
+- Ledger write prices in evals/prices.yaml are placeholders (marked).
+- promptfoo not run (needs node + key).
+- Splink non_match band empty in practice (prediction threshold 0.01 drops low pairs).
+- Evals detector targets injector patterns; recall 1.0 on every type is optimistic.
+
 ## Day 1 (2026-11-03)
 
 Run mode: `STORE_BACKEND=local`, `MODEL_PROVIDER=mock`. No keys needed for anything below.

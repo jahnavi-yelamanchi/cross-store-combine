@@ -5,9 +5,9 @@ max_tokens: 512
 models:
   haiku:
     id: claude-haiku-5-5
-    min_cacheable_tokens: 4096  # verify against current Anthropic docs before real runs
+    min_cacheable_tokens: 512  # Anthropic docs: 512-token minimum for Claude 5.5 models
     simulated_error_rate: 0.06
   sonnet:
     id: claude-sonnet-5-5
-    min_cacheable_tokens: 1024
+    min_cacheable_tokens: 512  # Anthropic docs: 512-token minimum for Claude 5.5 models
     simulated_error_rate: 0.03
