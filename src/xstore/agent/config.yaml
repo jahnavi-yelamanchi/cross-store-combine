@@ -1,0 +1,13 @@
+# Tiebreak agent models. Aliases are the keys evals and pricing use.
+default: haiku
+prompt_caching: true  # XSTORE_PROMPT_CACHING=0 turns it off
+max_tokens: 512
+models:
+  haiku:
+    id: claude-haiku-4-5
+    min_cacheable_tokens: 4096  # shorter system prompts are sent with cache_control but not cached
+    simulated_error_rate: 0.06
+  sonnet:
+    id: claude-sonnet-4-5
+    min_cacheable_tokens: 1024
+    simulated_error_rate: 0.03
