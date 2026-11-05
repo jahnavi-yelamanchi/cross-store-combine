@@ -1,0 +1,6 @@
+# xstore itself is vendored under src/ by `make func-azure-package`.
+# Runtime deps of xstore.cdc + xstore.entities only.
+azure-functions>=1.21
+fastavro>=1.9
+pydantic[email]>=2.7
+pyyaml>=6.0
