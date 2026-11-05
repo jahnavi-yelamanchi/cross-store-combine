@@ -1,0 +1,60 @@
+# Conflict policy for cross-store resolution. Read by xstore.policy.engine.
+# Changes go through agent-proposed, human-approved diffs (ADR-014); version bumps on apply.
+version: 1
+
+defaults:
+  # Customer: HubSpot first because sales/support edit names and phones there;
+  # postgres (app signup) next. Email is overridden below.
+  customer:
+    strategy: source_priority
+    source_priority: [hubspot, postgres, mongodb, dynamodb, cosmosdb, snowflake, s3_parquet]
+    recency: {field: updated_at, prefer: newest, tie_breaker: source_priority, max_staleness_days: 365}
+  # Order: postgres is the system of record for transactions.
+  order:
+    strategy: source_priority
+    source_priority: [postgres, mongodb, dynamodb, hubspot, s3_parquet]
+    recency: {field: updated_at, prefer: newest, tie_breaker: source_priority, max_staleness_days: 90}
+  # Batch: Cosmos DB holds the live warehouse view; newest write wins, Cosmos breaks ties.
+  batch:
+    strategy: recency
+    source_priority: [cosmosdb, postgres, adls_parquet]
+    recency: {field: updated_at, prefer: newest, tie_breaker: source_priority, max_staleness_days: 30}
+
+field_overrides:
+  customer:
+    # Email is the login identity; the app database owns it.
+    email:
+      strategy: source_priority
+      source_priority: [postgres, hubspot, mongodb, dynamodb, cosmosdb, snowflake, s3_parquet]
+  order:
+    amount:
+      strategy: source_priority
+      source_priority: [postgres, mongodb, dynamodb, s3_parquet, hubspot]
+  batch:
+    # Scale readings land in the lake first; Cosmos stores pounds and rounds.
+    weight_kg:
+      strategy: source_priority
+      source_priority: [adls_parquet, postgres, cosmosdb]
+
+unit_normalization:
+  # Canonical units. Per-store source units come from stores/mappings/*.yaml `units`;
+  # conversion reuses xstore.entities.mapping.
+  canonical_units:
+    order.amount: major_currency_units
+    batch.weight_kg: kg
+  source_units_from: stores/mappings
+
+type_coercion:
+  numeric_strings: true # "12.34" -> Decimal/float/int per canonical type
+  datetime_strings: true # ISO strings -> datetime
+  strip_strings: true
+  lowercase_fields: [customer.email]
+  numeric_tolerance: "0.005"
+
+require_approval:
+  deletes: true
+  sensitive_fields: [customer.email, customer.phone, order.amount]
+
+diff_proposals:
+  min_overrides: 3
+  proposed_by: heuristic
