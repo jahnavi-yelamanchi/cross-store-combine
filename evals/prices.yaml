@@ -1,0 +1,37 @@
+# Unit prices for cost metrics in scripts/run_matrix.py (xstore.evals.pricing).
+as_of: "2026-11"
+currency: USD
+
+# Anthropic first-party API, USD per million tokens.
+# input excludes cached tokens; cache_write_5m = 5-minute TTL cache writes; cache_read = cache hits.
+models:
+  claude-haiku-5-5:
+    input: 0.10
+    output: 0.50
+    cache_write_5m: 0.125
+    cache_read: 0.01
+  claude-sonnet-5-5:
+    input: 2.00
+    output: 10.00
+    cache_write_5m: 2.50
+    cache_read: 0.20
+
+# Ledger write cost comparison (one ~1 KB ledger item per proposed fix).
+# PLACEHOLDER values: not checked against live price pages (no network when written).
+storage:
+  dynamodb_on_demand:
+    usd_per_million_write_units: 0.625
+    write_units_per_1kb_write: 1.0
+    placeholder: true
+    source: "aws.amazon.com/dynamodb/pricing/on-demand (us-east-1, standard table class)"
+    verify: "check current WRU price for the deployment region before quoting"
+  cosmosdb_serverless:
+    usd_per_million_request_units: 0.25
+    request_units_per_1kb_write: 5.5
+    placeholder: true
+    source: "azure.microsoft.com/pricing/details/cosmos-db/serverless (RU per 1 KB insert with default indexing)"
+    verify: "check current serverless RU price and measured RU charge per write"
+
+# Matcher compute. Splink runs on local DuckDB in-process: no metered cost.
+compute:
+  splink_compute_per_1k_entities: 0.0
