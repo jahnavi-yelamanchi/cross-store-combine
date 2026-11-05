@@ -1,0 +1,8 @@
+# DAGSTER_HOME=orchestration/dagster; run storage defaults to SQLite under this directory.
+telemetry:
+  enabled: false
+run_coordinator:
+  module: dagster._core.run_coordinator
+  class: QueuedRunCoordinator
+  config:
+    max_concurrent_runs: 1  # local stores are in memory per process

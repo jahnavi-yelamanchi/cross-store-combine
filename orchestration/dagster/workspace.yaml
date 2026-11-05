@@ -1,0 +1,4 @@
+load_from:
+  - python_module:
+      module_name: xstore.orchestration.definitions
+      location_name: xstore

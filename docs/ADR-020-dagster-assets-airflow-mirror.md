@@ -1,0 +1,7 @@
+# ADR-020: Dagster software-defined assets as orchestrator, Airflow DAG mirrored
+
+- Context: the reconcile loop (ingest, CDC, diff, detect, match, propose) ran only as the `pipeline.demo` script; it needs a schedule, a trigger on CDC backlog, and a home for teams already on Airflow.
+- Decision: `xstore.orchestration.definitions` declares six Dagster software-defined assets over shared `steps` functions, with `ConfigurableResource`s for stores, CDC and the proposals API, three asset checks, `reconcile_job` every 15 min and `cdc_lag_sensor`, which reads consumer-group lag from Kafka/Redpanda when `KAFKA_BOOTSTRAP_SERVERS` is set (lazy `confluent_kafka`) and from `InProcessBus.lag` otherwise; `orchestration/airflow/dags/xstore_reconcile.py` mirrors the graph with TaskFlow tasks calling the same `steps`.
+- Alternative rejected: Airflow as primary (task-centric, no asset lineage or checks, too heavy to install here); a Dagster-only repo (blocks Airflow shops).
+- Why: assets give lineage, per-asset metadata and checks in one graph that `dagster.materialize` runs in-process in seconds; one `steps` module keeps the two orchestrators from drifting.
+- Consequence: local stores and bus live in process memory, so the job uses the in-process executor and Airflow must run as `airflow dags test`; detection is incremental over CDC (a run with no new events detects nothing); the Airflow DAG is checked by `py_compile` and AST only; `diff` runs `dbt build` only when asked and a `dbt/` project exists.
