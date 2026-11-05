@@ -1,0 +1,54 @@
+name: eval-gate
+
+# Runs evals on local backends + mock model; fails below evals/thresholds.yaml.
+# Steps for layers not built yet are skipped via hashFiles guards.
+
+on:
+  push:
+    branches: [main, "bot/**"]
+  pull_request:
+
+concurrency:
+  group: eval-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  STORE_BACKEND: local
+  MODEL_PROVIDER: mock
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: dbt test
+        if: hashFiles('dbt/dbt_project.yml') != ''
+        run: uv run dbt build --project-dir dbt --profiles-dir dbt
+      - name: Great Expectations
+        if: hashFiles('great_expectations/checkpoints/*.yml') != ''
+        run: uv run python -m xstore.quality.run_checkpoint
+      - name: Inspect AI tiebreak
+        if: hashFiles('evals/inspect/tiebreak.py') != ''
+        run: uv run inspect eval evals/inspect/tiebreak.py --model mockllm/model --log-dir logs
+      - name: Comparison matrix (holdout)
+        if: hashFiles('scripts/run_matrix.py') != ''
+        run: uv run python scripts/run_matrix.py --split holdout --out runs
+      - name: Gate
+        if: hashFiles('scripts/run_matrix.py') != ''
+        run: uv run python scripts/eval_gate.py --runs runs --inspect-logs logs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: |
+            runs/
+            logs/
+          if-no-files-found: ignore

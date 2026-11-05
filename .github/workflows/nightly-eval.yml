@@ -1,0 +1,49 @@
+name: nightly-eval
+
+# Full comparison matrix on frozen v1 (train + holdout), report + plot as artifact.
+
+on:
+  schedule:
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  STORE_BACKEND: local
+  MODEL_PROVIDER: mock
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: make verify-frozen
+      - name: Matrix
+        run: |
+          uv run python scripts/run_matrix.py --split train --out runs
+          uv run python scripts/run_matrix.py --split holdout --out runs
+      - name: Inspect AI
+        run: uv run inspect eval evals/inspect/tiebreak.py --model mockllm/model --log-dir logs
+      - name: Report
+        run: uv run python scripts/report.py --runs runs --out results
+      - name: Gate
+        run: uv run python scripts/eval_gate.py --runs runs --inspect-logs logs
+      - name: Summary
+        if: always()
+        run: test -f results/results.md && cat results/results.md >> "$GITHUB_STEP_SUMMARY" || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nightly-eval-${{ github.run_id }}
+          path: |
+            runs/
+            logs/
+            results/
+          if-no-files-found: ignore
