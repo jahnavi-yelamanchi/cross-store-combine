@@ -1,0 +1,73 @@
+name: contracts
+
+# PR/push: a clean synthetic company must satisfy every contract (gates the change).
+# Frozen v1 carries injected schema drift by design, so on PRs it is reported only (dry-run).
+# Nightly: frozen v1 check opens one deduplicated GitHub issue per drifted store.entity.
+
+on:
+  push:
+    branches: [main]
+    paths: ["contracts/**", "stores/mappings/**", "src/xstore/**", ".github/workflows/contracts.yml"]
+  pull_request:
+    paths: ["contracts/**", "stores/mappings/**", "src/xstore/**", ".github/workflows/contracts.yml"]
+  schedule:
+    - cron: "41 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contracts-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  STORE_BACKEND: local
+  MODEL_PROVIDER: mock
+
+jobs:
+  check:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Clean synthetic sample (gate)
+        run: uv run python -m xstore.contracts check --synthetic 500 --seed 7
+      - name: Frozen v1 (report only, dry-run issues)
+        run: |
+          set +e
+          uv run python -m xstore.contracts check --snapshot evals/frozen/v1 --open-issues > contracts.txt
+          echo "frozen v1 exit code: $? (1 expected: injected drift)"
+          { echo '```'; cat contracts.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit 0
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: contract-issues-dry-run-${{ github.run_id }}
+          path: runs/contract_issues/
+          if-no-files-found: ignore
+
+  nightly:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - name: Frozen v1 drift opens issues
+        env:
+          XSTORE_OPEN_ISSUES: "1"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: uv run python -m xstore.contracts check --snapshot evals/frozen/v1 --open-issues
