@@ -1,0 +1,19 @@
+# Splink matcher config (customer entity resolution).
+seed: 42
+bands:
+  match_at: 0.95
+  non_match_below: 0.50
+predict_threshold: 0.01
+u_max_pairs: 1.0e6
+# Deterministic rules for probability_two_random_records_match.
+deterministic_rules:
+  - "l.email_norm = r.email_norm AND l.phone_norm = r.phone_norm"
+deterministic_recall: 0.8
+# Each rule is a list of columns/expressions passed to block_on(...).
+blocking_rules:
+  - [email_norm]
+  - [phone_norm]
+  - ["substr(name_norm, 1, 4)", country]
+em_training_rules:
+  - [email_norm]
+  - [phone_norm]
