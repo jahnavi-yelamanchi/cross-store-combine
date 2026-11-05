@@ -1,0 +1,71 @@
+# Data contract (data product owned by supply-chain). Bootstrapped by scripts/gen_contracts.py.
+dataContractSpecification: 1.1.0
+id: urn:datacontract:xstore:adls_parquet
+store: adls_parquet
+info:
+  title: adls_parquet data product
+  version: 1.0.0
+  owner: supply-chain
+  domain: supply-chain
+  description: Batch lineage in the Azure lake.
+  contact:
+    name: supply-chain
+    channel: '#supply-chain'
+policy:
+  schemaDrift: fail
+  missingField: fail
+  enum: fail
+  typeDrift: warn
+  typeDriftThreshold: 0.01
+models:
+  batch:
+    description: Batch records as adls_parquet stores them natively.
+    table: lake/batch
+    primaryKey: batch_id
+    freshness:
+      field: updated_at
+      maxAgeHours: 24
+    fields:
+      batch_id:
+        type: string
+        canonical: Batch.batch_id
+        required: true
+        primaryKey: true
+      sku:
+        type: string
+        canonical: Batch.sku
+        required: true
+      quantity:
+        type: integer
+        canonical: Batch.quantity
+        required: true
+        unit: each
+      weight_kg:
+        type: number
+        canonical: Batch.weight_kg
+        required: true
+        unit: kg
+      warehouse:
+        type: string
+        canonical: Batch.warehouse
+        required: true
+      produced_at:
+        type: timestamp
+        canonical: Batch.produced_at
+        required: true
+      expires_at:
+        type: timestamp
+        canonical: Batch.expires_at
+      updated_at:
+        type: timestamp
+        canonical: Batch.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: batch_id
+    - type: range
+      field: quantity
+      min: 0
+    - type: range
+      field: weight_kg
+      min: 0

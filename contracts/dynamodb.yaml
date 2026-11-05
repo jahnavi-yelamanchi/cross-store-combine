@@ -1,0 +1,122 @@
+# Data contract (data product owned by orders-platform). Bootstrapped by scripts/gen_contracts.py.
+dataContractSpecification: 1.1.0
+id: urn:datacontract:xstore:dynamodb
+store: dynamodb
+info:
+  title: dynamodb data product
+  version: 1.0.0
+  owner: orders-platform
+  domain: orders
+  description: Single-table checkout state.
+  contact:
+    name: orders-platform
+    channel: '#orders-platform'
+policy:
+  schemaDrift: fail
+  missingField: fail
+  enum: fail
+  typeDrift: warn
+  typeDriftThreshold: 0.01
+models:
+  customer:
+    description: Customer records as dynamodb stores them natively.
+    table: xstore
+    primaryKey: pk
+    keyPrefix: CUSTOMER#
+    freshness:
+      field: updated_at
+      maxAgeHours: 24
+    fields:
+      pk:
+        type: string
+        canonical: Customer.customer_id
+        required: true
+        primaryKey: true
+      name:
+        type: string
+        canonical: Customer.name
+        required: true
+      email:
+        type: string
+        canonical: Customer.email
+        format: email
+        pii: true
+      phone:
+        type: string
+        canonical: Customer.phone
+        pii: true
+      country:
+        type: string
+        canonical: Customer.country
+      updated_at:
+        type: timestamp
+        canonical: Customer.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: pk
+    - type: pattern
+      field: pk
+      pattern: ^CUSTOMER#
+    - type: length
+      field: country
+      min: 2
+      max: 2
+  order:
+    description: Order records as dynamodb stores them natively.
+    table: xstore
+    primaryKey: pk
+    keyPrefix: ORDER#
+    freshness:
+      field: updated_at
+      maxAgeHours: 1
+    fields:
+      pk:
+        type: string
+        canonical: Order.order_id
+        required: true
+        primaryKey: true
+      customer_id:
+        type: string
+        canonical: Order.customer_id
+        required: true
+      amount:
+        type: decimal
+        canonical: Order.amount
+        required: true
+        unit: currency_major
+      currency:
+        type: string
+        canonical: Order.currency
+        required: true
+      order_status:
+        type: string
+        canonical: Order.status
+        required: true
+        enum:
+        - pending
+        - paid
+        - shipped
+        - cancelled
+        - refunded
+      ordered_at:
+        type: timestamp
+        canonical: Order.ordered_at
+        required: true
+      updated_at:
+        type: timestamp
+        canonical: Order.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: pk
+    - type: pattern
+      field: pk
+      pattern: ^ORDER#
+    - type: range
+      field: amount
+      min: 0
+    - type: length
+      field: currency
+      min: 3
+      max: 3

@@ -1,0 +1,114 @@
+# Data contract (data product owned by storefront-team). Bootstrapped by scripts/gen_contracts.py.
+dataContractSpecification: 1.1.0
+id: urn:datacontract:xstore:mongodb
+store: mongodb
+info:
+  title: mongodb data product
+  version: 1.0.0
+  owner: storefront-team
+  domain: commerce
+  description: Storefront customer profiles and carts.
+  contact:
+    name: storefront-team
+    channel: '#storefront-team'
+policy:
+  schemaDrift: fail
+  missingField: fail
+  enum: fail
+  typeDrift: warn
+  typeDriftThreshold: 0.01
+models:
+  customer:
+    description: Customer records as mongodb stores them natively.
+    table: customers
+    primaryKey: _id
+    freshness:
+      field: updatedAt
+      maxAgeHours: 24
+    fields:
+      _id:
+        type: string
+        canonical: Customer.customer_id
+        required: true
+        primaryKey: true
+      name:
+        type: string
+        canonical: Customer.name
+        required: true
+      email:
+        type: string
+        canonical: Customer.email
+        format: email
+        pii: true
+      phone:
+        type: string
+        canonical: Customer.phone
+        pii: true
+      country:
+        type: string
+        canonical: Customer.country
+      updatedAt:
+        type: timestamp
+        canonical: Customer.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: _id
+    - type: length
+      field: country
+      min: 2
+      max: 2
+  order:
+    description: Order records as mongodb stores them natively.
+    table: orders
+    primaryKey: _id
+    freshness:
+      field: updatedAt
+      maxAgeHours: 1
+    fields:
+      _id:
+        type: string
+        canonical: Order.order_id
+        required: true
+        primaryKey: true
+      customerId:
+        type: string
+        canonical: Order.customer_id
+        required: true
+      total:
+        type: decimal
+        canonical: Order.amount
+        required: true
+        unit: currency_major
+      currency:
+        type: string
+        canonical: Order.currency
+        required: true
+      status:
+        type: string
+        canonical: Order.status
+        required: true
+        enum:
+        - pending
+        - paid
+        - shipped
+        - cancelled
+        - refunded
+      orderedAt:
+        type: timestamp
+        canonical: Order.ordered_at
+        required: true
+      updatedAt:
+        type: timestamp
+        canonical: Order.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: _id
+    - type: range
+      field: total
+      min: 0
+    - type: length
+      field: currency
+      min: 3
+      max: 3

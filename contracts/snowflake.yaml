@@ -1,0 +1,60 @@
+# Data contract (data product owned by data-platform). Bootstrapped by scripts/gen_contracts.py.
+dataContractSpecification: 1.1.0
+id: urn:datacontract:xstore:snowflake
+store: snowflake
+info:
+  title: snowflake data product
+  version: 1.0.0
+  owner: data-platform
+  domain: analytics
+  description: Warehouse marts for reporting.
+  contact:
+    name: data-platform
+    channel: '#data-platform'
+policy:
+  schemaDrift: fail
+  missingField: fail
+  enum: fail
+  typeDrift: warn
+  typeDriftThreshold: 0.01
+models:
+  customer:
+    description: Customer records as snowflake stores them natively.
+    table: CUSTOMERS
+    primaryKey: CUSTOMER_ID
+    freshness:
+      field: UPDATED_AT
+      maxAgeHours: 24
+    fields:
+      CUSTOMER_ID:
+        type: string
+        canonical: Customer.customer_id
+        required: true
+        primaryKey: true
+      NAME:
+        type: string
+        canonical: Customer.name
+        required: true
+      EMAIL:
+        type: string
+        canonical: Customer.email
+        format: email
+        pii: true
+      PHONE:
+        type: string
+        canonical: Customer.phone
+        pii: true
+      COUNTRY:
+        type: string
+        canonical: Customer.country
+      UPDATED_AT:
+        type: timestamp
+        canonical: Customer.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: CUSTOMER_ID
+    - type: length
+      field: COUNTRY
+      min: 2
+      max: 2
