@@ -9,6 +9,8 @@ from pydantic import BaseModel
 
 from xstore.ledger.ledger import Ledger
 from xstore.ledger.models import DELETED, FixApplied, FixApproved, record_hash
+from xstore.observability.instrument import observe_apply
+from xstore.observability.tracing import span
 from xstore.stores.base import Store
 
 
@@ -55,6 +57,13 @@ def _proposal_ids(ledger: Ledger, type: Any) -> set[str]:
 
 def apply_pending(ledger: Ledger, stores: Mapping[str, Store]) -> ApplyReport:
     """Apply each FixApproved lacking a FixApplied (or FixRejected) for its proposal id."""
+    with span("ledger.apply_pending") as s:
+        report = _apply_pending(ledger, stores)
+        observe_apply(s, report)
+    return report
+
+
+def _apply_pending(ledger: Ledger, stores: Mapping[str, Store]) -> ApplyReport:
     done = _proposal_ids(ledger, "FixApplied") | _proposal_ids(ledger, "FixRejected")
     report = ApplyReport()
     for event in ledger.events(types=["FixApproved"]):
