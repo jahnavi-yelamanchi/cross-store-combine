@@ -1,0 +1,20 @@
+xstore {{ .Chart.AppVersion }} installed as {{ .Release.Name }} in {{ .Release.Namespace }}.
+Mode: STORE_BACKEND={{ .Values.env.STORE_BACKEND }} MODEL_PROVIDER={{ .Values.env.MODEL_PROVIDER }}
+
+Proposals API:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "xstore.fullname" . }}-api 8040:{{ .Values.api.service.port }}
+  curl http://127.0.0.1:8040/healthz
+{{- if .Values.dagster.enabled }}
+
+Dagster UI:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "xstore.fullname" . }}-dagster 3000:{{ .Values.dagster.service.port }}
+{{- end }}
+{{- if .Values.reconcile.enabled }}
+
+Reconcile CronJob ({{ .Values.reconcile.schedule }}); run now:
+  kubectl -n {{ .Release.Namespace }} create job --from=cronjob/{{ include "xstore.fullname" . }}-reconcile reconcile-manual
+{{- end }}
+{{- with .Values.secrets.existingSecret }}
+
+Secrets are read from Secret/{{ . }} (not managed by this chart).
+{{- end }}
