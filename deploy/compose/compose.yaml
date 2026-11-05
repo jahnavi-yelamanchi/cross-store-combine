@@ -1,0 +1,357 @@
+# Local parity stack. Profiles: core (stores + CDC), app (xstore services), observability.
+#   cp deploy/compose/.env.example deploy/compose/.env   # optional; defaults below match it
+#   make up
+# Files mounted from observability/ and src/xstore/orchestration/ land in parallel PRs.
+name: xstore
+
+x-xstore-env: &xstore-env
+  STORE_BACKEND: ${STORE_BACKEND:-local}
+  MODEL_PROVIDER: ${MODEL_PROVIDER:-mock}
+
+x-xstore-build: &xstore-build
+  context: ../..
+  dockerfile: Dockerfile
+
+services:
+  # ---------- core ----------
+  postgres:
+    image: postgres:16
+    profiles: [core]
+    command: ["postgres", "-c", "wal_level=logical", "-c", "max_replication_slots=4", "-c", "max_wal_senders=4"]
+    environment:
+      POSTGRES_DB: xstore
+      POSTGRES_USER: ${POSTGRES_USER:-xstore}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-xstore}
+    ports: ["5432:5432"]
+    volumes: [pg-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d xstore"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mongo:
+    image: mongo:7
+    profiles: [core]
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports: ["27017:27017"]
+    volumes: [mongo-data:/data/db]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # One-shot: initiate rs0 and enable pre/post images for Debezium change streams.
+  mongo-init:
+    image: mongo:7
+    profiles: [core]
+    restart: "no"
+    depends_on:
+      mongo: {condition: service_healthy}
+    command:
+      - mongosh
+      - --host
+      - mongo:27017
+      - --quiet
+      - --eval
+      - |
+        try { rs.status(); } catch (e) { rs.initiate({_id: "rs0", members: [{_id: 0, host: "mongo:27017"}]}); }
+        while (!db.hello().isWritablePrimary) { sleep(500); }
+        const x = db.getSiblingDB("xstore");
+        for (const c of ["customers", "orders"]) {
+          if (!x.getCollectionNames().includes(c)) { x.createCollection(c); }
+          x.runCommand({collMod: c, changeStreamPreAndPostImages: {enabled: true}});
+        }
+
+  redpanda:
+    image: redpandadata/redpanda:v24.2.18
+    profiles: [core]
+    command:
+      - redpanda
+      - start
+      - --mode=dev-container
+      - --smp=1
+      - --kafka-addr=internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr=internal://redpanda:9092,external://localhost:19092
+      - --schema-registry-addr=0.0.0.0:8081
+      - --pandaproxy-addr=0.0.0.0:8082
+      - --advertise-pandaproxy-addr=redpanda:8082
+      - --rpc-addr=redpanda:33145
+      - --advertise-rpc-addr=redpanda:33145
+    ports:
+      - "19092:19092" # Kafka API (host)
+      - "18081:8081" # Schema Registry
+      - "9644:9644" # Admin API
+    volumes: [redpanda-data:/var/lib/redpanda/data]
+    networks:
+      default:
+        # cdc/debezium/*.json point converters at http://schema-registry:8081.
+        aliases: [schema-registry]
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redpanda-console:
+    image: redpandadata/console:v2.7.2
+    profiles: [core]
+    depends_on:
+      redpanda: {condition: service_healthy}
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      KAFKA_SCHEMAREGISTRY_ENABLED: "true"
+      KAFKA_SCHEMAREGISTRY_URLS: http://redpanda:8081
+      REDPANDA_ADMINAPI_ENABLED: "true"
+      REDPANDA_ADMINAPI_URLS: http://redpanda:9644
+    ports: ["8080:8080"]
+
+  # Debezium Kafka Connect on Redpanda. The connectors use the Confluent Avro converter,
+  # which the debezium image does not ship: put its jars in deploy/compose/connect-plugins/.
+  connect:
+    image: debezium/connect:2.7
+    profiles: [core]
+    depends_on:
+      redpanda: {condition: service_healthy}
+      postgres: {condition: service_healthy}
+      mongo-init: {condition: service_completed_successfully}
+    environment:
+      BOOTSTRAP_SERVERS: redpanda:9092
+      GROUP_ID: xstore-connect
+      CONFIG_STORAGE_TOPIC: _xstore_connect_configs
+      OFFSET_STORAGE_TOPIC: _xstore_connect_offsets
+      STATUS_STORAGE_TOPIC: _xstore_connect_status
+      CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      # Resolve ${env:...} placeholders in cdc/debezium/*.json.
+      CONNECT_CONFIG_PROVIDERS: env
+      CONNECT_CONFIG_PROVIDERS_ENV_CLASS: org.apache.kafka.common.config.provider.EnvVarConfigProvider
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER:-xstore}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-xstore}
+      MONGO_URI: mongodb://mongo:27017/?replicaSet=rs0
+    ports: ["8083:8083"]
+    volumes:
+      - type: bind
+        source: ./connect-plugins
+        target: /kafka/connect/xstore-extra
+        read_only: true
+        bind: {create_host_path: true}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8083/connectors"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # One-shot: register cdc/debezium/*.json with the Connect REST API (201 or 409 = ok).
+  connect-init:
+    image: curlimages/curl:8.10.1
+    profiles: [core]
+    restart: "no"
+    depends_on:
+      connect: {condition: service_healthy}
+    volumes: [../../cdc/debezium:/connectors:ro]
+    entrypoint: ["sh", "-c"]
+    command:
+      - |
+        set -e
+        for f in /connectors/*.json; do
+          code=$$(curl -sS -o /tmp/out -w '%{http_code}' -X POST -H 'Content-Type: application/json' --data @"$$f" http://connect:8083/connectors)
+          echo "$$f -> $$code"
+          case "$$code" in 201|409) ;; *) cat /tmp/out; exit 1 ;; esac
+        done
+
+  dynamodb-local:
+    image: amazon/dynamodb-local:2.5.2
+    profiles: [core]
+    user: root
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-dbPath", "/home/dynamodblocal/data"]
+    ports: ["8000:8000"]
+    volumes: [dynamodb-data:/home/dynamodblocal/data]
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/127.0.0.1/8000'"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:RELEASE.2024-10-13T13-34-11Z
+    profiles: [core]
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-xstore}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-xstore-local}
+    ports: ["9000:9000", "9001:9001"]
+    volumes: [minio-data:/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio-init:
+    image: minio/mc:RELEASE.2024-10-08T09-37-26Z
+    profiles: [core]
+    restart: "no"
+    depends_on:
+      minio: {condition: service_healthy}
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-xstore}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-xstore-local}
+    entrypoint: ["sh", "-c"]
+    command:
+      - mc alias set local http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" && mc mb --ignore-existing local/xstore-lake
+
+  # ---------- app ----------
+  api:
+    build: {<<: *xstore-build, target: runtime}
+    image: xstore:local
+    profiles: [app]
+    environment:
+      <<: *xstore-env
+      PORT: "8040"
+      DATABASE_URL: sqlite:////data/proposals.db
+    ports: ["8040:8040"]
+    volumes: [api-data:/data]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u;u.urlopen('http://127.0.0.1:8040/healthz',timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  crm:
+    image: xstore:local
+    profiles: [app]
+    pull_policy: never
+    depends_on:
+      api: {condition: service_started}
+    command: ["uvicorn", "xstore.crm.app:app", "--host", "0.0.0.0", "--port", "8030"]
+    environment:
+      <<: *xstore-env
+      PORT: "8030"
+      HEALTH_PATH: /openapi.json
+    ports: ["8030:8030"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u;u.urlopen('http://127.0.0.1:8030/openapi.json',timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  # Code location xstore.orchestration.definitions lands with the Dagster PR.
+  dagster-webserver:
+    build: {<<: *xstore-build, target: dagster}
+    image: xstore-dagster:local
+    profiles: [app]
+    environment:
+      <<: *xstore-env
+    command: ["dagster-webserver", "-h", "0.0.0.0", "-p", "3000", "-m", "xstore.orchestration.definitions"]
+    ports: ["3000:3000"]
+    volumes: [dagster-home:/data/dagster]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u;u.urlopen('http://127.0.0.1:3000/server_info',timeout=2)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  dagster-daemon:
+    image: xstore-dagster:local
+    profiles: [app]
+    pull_policy: never
+    depends_on:
+      dagster-webserver: {condition: service_healthy}
+    environment:
+      <<: *xstore-env
+    command: ["dagster-daemon", "run", "-m", "xstore.orchestration.definitions"]
+    volumes: [dagster-home:/data/dagster]
+    healthcheck:
+      test: ["CMD", "dagster-daemon", "liveness-check"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ---------- observability ----------
+  langfuse-db:
+    image: postgres:16
+    profiles: [observability]
+    environment:
+      POSTGRES_DB: langfuse
+      POSTGRES_USER: langfuse
+      POSTGRES_PASSWORD: ${LANGFUSE_DB_PASSWORD:-langfuse}
+    volumes: [langfuse-db-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langfuse -d langfuse"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  langfuse:
+    image: langfuse/langfuse:2
+    profiles: [observability]
+    depends_on:
+      langfuse-db: {condition: service_healthy}
+    environment:
+      DATABASE_URL: postgresql://langfuse:${LANGFUSE_DB_PASSWORD:-langfuse}@langfuse-db:5432/langfuse
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-local-dev-only}
+      SALT: ${LANGFUSE_SALT:-local-dev-only}
+      TELEMETRY_ENABLED: "false"
+    ports: ["3001:3000"]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/public/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    profiles: [observability]
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    ports: ["9090:9090"]
+    volumes:
+      - ../../observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9090/-/healthy"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  grafana:
+    image: grafana/grafana:11.3.0
+    profiles: [observability]
+    depends_on:
+      prometheus: {condition: service_healthy}
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    ports: ["3002:3000"]
+    volumes:
+      - ../../observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../../observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  # Optional: `--profile otel`. Uses the image's default config (OTLP in, debug out).
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0
+    profiles: [otel]
+    ports: ["4317:4317", "4318:4318"]
+
+volumes:
+  pg-data:
+  mongo-data:
+  redpanda-data:
+  dynamodb-data:
+  minio-data:
+  api-data:
+  dagster-home:
+  langfuse-db-data:
+  prometheus-data:
+  grafana-data:
