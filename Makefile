@@ -59,3 +59,6 @@ eval:
 
 report:
 	uv run python scripts/report.py --runs runs --out results
+
+# Per-area targets live in mk/<area>.mk so parallel branches don't collide here.
+-include $(wildcard mk/*.mk)

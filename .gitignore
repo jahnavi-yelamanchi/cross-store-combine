@@ -12,10 +12,12 @@ build/
 *.duckdb
 *.sqlite
 *.db
-runs/
+runs/*
+!runs/.gitkeep
 .terraform/
 *.tfstate*
 target/
 logs/
 dbt_packages/
 .DS_Store
+dbt/.user.yml

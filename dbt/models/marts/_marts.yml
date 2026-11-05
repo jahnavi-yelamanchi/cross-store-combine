@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: reconciled_customers
+    description: One row per customer_id with per-store values, conflicts and policy pick.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: n_sources
+        data_tests: [not_null]
+
+  - name: canonical_customers
+    description: Resolved customer per key (validated by Great Expectations).
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: country
+        data_tests:
+          # Snapshot injections (typos, schema drift) can surface odd codes; report, don't fail.
+          - accepted_values:
+              arguments:
+                values: [US, GB, DE, FR, IN, JP, BR, CA, AU, NG]
+              config:
+                severity: warn
+
+  - name: reconciled_orders
+    description: One row per order_id with per-store values, conflicts and policy pick.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+
+  - name: canonical_orders
+    description: Resolved order per key.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          # The frozen snapshot plants orphaned customer ids on purpose (labels.jsonl,
+          # type=orphaned), so some orphans are expected: warn on any, fail only if the
+          # count exceeds the injection budget, which would mean a mapping bug.
+          - relationships:
+              arguments:
+                to: ref('canonical_customers')
+                field: customer_id
+              config:
+                severity: error
+                warn_if: ">0"
+                error_if: ">100"
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [pending, paid, shipped, cancelled, refunded]
+              config:
+                severity: warn
+      - name: currency
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [USD, EUR, GBP]
+              config:
+                severity: warn

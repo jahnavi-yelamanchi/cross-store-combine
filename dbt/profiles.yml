@@ -1,0 +1,27 @@
+# Local runs use DuckDB. snowflake/bigquery are real-mode targets: credentials come from
+# env vars only and they are never selected in tests or CI.
+xstore:
+  target: "{{ env_var('XSTORE_DBT_TARGET', 'local') }}"
+  outputs:
+    local:
+      type: duckdb
+      path: "{{ env_var('XSTORE_WAREHOUSE', 'runs/warehouse.duckdb') }}"
+      threads: 4
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', '') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', '') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD', '') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'TRANSFORMER') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'XSTORE_WH') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'XSTORE') }}"
+      schema: "{{ env_var('SNOWFLAKE_SCHEMA', 'ANALYTICS') }}"
+      threads: 4
+    bigquery:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('BIGQUERY_PROJECT', '') }}"
+      dataset: "{{ env_var('BIGQUERY_DATASET', 'xstore') }}"
+      keyfile: "{{ env_var('BIGQUERY_KEYFILE', '') }}"
+      location: "{{ env_var('BIGQUERY_LOCATION', 'US') }}"
+      threads: 4
