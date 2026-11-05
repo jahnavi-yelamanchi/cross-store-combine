@@ -1,4 +1,4 @@
-.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api policy-check match replay
+.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api policy-check match replay e2e demo-local
 
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
@@ -45,3 +45,9 @@ match:
 
 replay:
 	uv run python -m xstore.ledger.replay --ledger sqlite:///runs/ledger.db --snapshot evals/frozen/v1
+
+e2e:
+	uv run pytest -m e2e
+
+demo-local:
+	STORE_BACKEND=local MODEL_PROVIDER=mock uv run python -m xstore.pipeline.demo --customers 200 --injections 20 --seed 7
