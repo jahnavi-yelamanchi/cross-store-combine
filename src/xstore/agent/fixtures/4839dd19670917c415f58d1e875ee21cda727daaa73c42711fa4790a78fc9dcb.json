@@ -10,7 +10,7 @@
     "rationale": "Different emails on different domains, different phone numbers and countries (US vs GB), and unrelated names; nothing identifying agrees.",
     "same_entity": false
   },
-  "model": "claude-sonnet-4-5",
+  "model": "claude-sonnet-5-5",
   "usage": {
     "cache_read_tokens": 1053,
     "cache_write_tokens": 0,

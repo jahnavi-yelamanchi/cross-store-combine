@@ -10,7 +10,7 @@
     "rationale": "Emails equal ignoring case; phone digits equal (4155550101); names are the same tokens reordered ('Lee, Ana' vs 'Ana Lee'); country US on both.",
     "same_entity": true
   },
-  "model": "claude-haiku-4-5",
+  "model": "claude-haiku-5-5",
   "usage": {
     "cache_read_tokens": 0,
     "cache_write_tokens": 0,

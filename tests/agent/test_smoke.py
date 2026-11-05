@@ -54,4 +54,4 @@ def test_tiebreak_agent_mcp_evidence_and_fixture_replay() -> None:
     assert diff.decision.same_entity is False
     assert all(r.usage.input_tokens > 0 and r.usage.output_tokens > 0 for r in (same, diff))
     assert any(r.source == "fixture" for r in (same, diff))
-    assert same.model == "claude-haiku-4-5" and same.provider == "mock"
+    assert same.model == "claude-haiku-5-5" and same.provider == "mock"
