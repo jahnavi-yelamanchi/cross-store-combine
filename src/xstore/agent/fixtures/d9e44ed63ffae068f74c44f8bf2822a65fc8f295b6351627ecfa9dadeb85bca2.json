@@ -1,0 +1,20 @@
+{
+  "decision": {
+    "confidence": 0.96,
+    "evidence_fields": [
+      "email",
+      "phone",
+      "name",
+      "country"
+    ],
+    "rationale": "Emails equal ignoring case; phone digits equal (4155550101); names are the same tokens reordered ('Lee, Ana' vs 'Ana Lee'); country US on both.",
+    "same_entity": true
+  },
+  "model": "claude-sonnet-5-5",
+  "usage": {
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 1053,
+    "input_tokens": 390,
+    "output_tokens": 71
+  }
+}
