@@ -29,7 +29,22 @@ Paths are as of the branch that adds them (PR in brackets).
 | Lambda | src/xstore/cdc/dynamodb_streams.py (#22) | Event-source-mapping handler shape |
 | Azure Functions | src/xstore/cdc/cosmos_change_feed.py (#22) | cosmosDBTrigger handler shape |
 | Entra workload identity | src/xstore/stores/cosmosdb.py (#20) | DefaultAzureCredential, no keys |
-| idempotency key | src/xstore/stores/*.py, src/xstore/crm/app.py (#19, #23, #20, #21) | Claimed in-store per write; Idempotency-Key header |
-| FastAPI | src/xstore/crm/app.py (#23) | HubSpot-shaped CRM stub |
-| GitHub Actions | .github/workflows/ci.yml (#25) | ruff, mypy, smoke |
-| ADR | docs/ADR-001..010 | Decision records |
+| idempotency key | src/xstore/stores/*.py, src/xstore/crm/app.py, src/xstore/proposals/app.py, src/xstore/ledger/ledger.py (#19, #23, #35, #39) | Claimed in-store per write; Idempotency-Key header; unique per ledger event |
+| FastAPI | src/xstore/crm/app.py, src/xstore/proposals/app.py (#23, #35) | HubSpot-shaped CRM stub; proposals approve/reject API |
+| GitHub Actions | .github/workflows/ci.yml, eval-gate.yml, nightly-eval.yml, db-setup-checklist.yml (#25, #34) | ruff/mypy/smoke; eval threshold gate; nightly matrix |
+| ADR | docs/ADR-001..018 | Decision records |
+| DuckDB | src/xstore/matching/splink_matcher.py (#38) | Splink backend (DuckDBAPI) |
+| Splink | src/xstore/matching/splink_matcher.py, src/xstore/matching/settings.yaml (#38) | Probabilistic matcher; u by sampling, m by EM |
+| Fellegi-Sunter | src/xstore/matching/splink_matcher.py, docs/ADR-012-splink-matcher-baseline.md (#38) | Match weights per comparison level |
+| blocking rules | src/xstore/matching/settings.yaml (#38) | email, phone, name prefix + country |
+| entity resolution | src/xstore/matching/ (#38) | dedupe_only over all stores' customers; clusters via union-find |
+| record linkage | src/xstore/matching/canonical.py (#38) | Cross-store customer table from native records |
+| LangGraph | src/xstore/agent/graph.py (#37) | fetch_evidence -> decide -> validate StateGraph |
+| MCP | src/xstore/agent/evidence_mcp.py (#37) | `xstore-evidence` server, `get_evidence` tool, in-memory client |
+| Instructor | src/xstore/agent/providers.py (#37) | `response_model=TiebreakDecision` for Anthropic/OpenAI |
+| prompt caching | src/xstore/agent/providers.py, src/xstore/agent/config.yaml, evals/prices.yaml (#37, #31) | cache_control on system prompt; cache reads priced separately |
+| event sourcing | src/xstore/ledger/ (#39) | FixApproved/FixApplied events drive apply and replay |
+| append-only ledger | src/xstore/ledger/ledger.py (#39) | DB triggers block UPDATE/DELETE; hash chain |
+| replay | src/xstore/ledger/replay.py, Makefile `replay` (#39) | Reseed isolated stores, re-apply fixes, verify hashes |
+| Inspect AI | evals/inspect/tiebreak.py (#31) | Tiebreak task, custom solver, exact-match scorer |
+| promptfoo | evals/promptfoo/promptfooconfig.yaml (#31) | Tiebreak prompt regression, Haiku 5.5 vs Sonnet 5.5 |
