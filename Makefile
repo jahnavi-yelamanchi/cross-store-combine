@@ -1,4 +1,4 @@
-.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api policy-check match replay e2e demo-local
+.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api policy-check match replay e2e demo-local eval report
 
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
@@ -51,3 +51,11 @@ e2e:
 
 demo-local:
 	STORE_BACKEND=local MODEL_PROVIDER=mock uv run python -m xstore.pipeline.demo --customers 200 --injections 20 --seed 7
+
+eval:
+	uv run python scripts/run_matrix.py --split train --out runs
+	uv run python scripts/run_matrix.py --split holdout --out runs
+	uv run python scripts/report.py --runs runs --out results
+
+report:
+	uv run python scripts/report.py --runs runs --out results
