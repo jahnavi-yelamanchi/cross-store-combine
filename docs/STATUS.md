@@ -1,5 +1,50 @@
 # Status
 
+## Day 3 (2026-11-05)
+
+Run mode: `STORE_BACKEND=local`, `MODEL_PROVIDER=mock`. PRs open, not merged.
+
+| Issue | PR | What |
+|---|---|---|
+| #42 dbt, GX, OpenLineage + Day 3 base commit | #56 | Merge first: carries deps and the `mk/*.mk` include the others build on |
+| #43 Dagster + Airflow | #53 | Assets, checks, schedule, CDC-lag sensor; Airflow mirror |
+| #44 data contracts | #50 | contracts/*.yaml, check CLI, drift issues, contracts.yml |
+| #45 observability | #51 | OTel spans, Prometheus metrics, Grafana, Langfuse hook |
+| #46 terraform/aws | #54 | MSK, RDS, DynamoDB, S3+Glue+Athena, Lambda, SQS DLQ, IAM, EKS |
+| #47 terraform/azure | #55 | Event Hubs, Cosmos, ADLS, Synapse, Functions, Event Grid, Entra, AKS |
+| #48 compose, Helm, kind | #52 | `make up` (not run), Helm EKS/AKS overlays, kind config |
+| #49 docs | (this PR) | README, ARCHITECTURE, SETUP, `make bootstrap`, KEYWORD_MAP, STATUS, ADR-026 |
+
+Merge order: #56, then any order. Combined tree of all eight branches merged locally without conflicts.
+
+### What runs (combined tree)
+- ruff, mypy (79 files), `pytest` 25 passed (24 smoke + 1 e2e).
+- `make dbt-build`: PASS=59 WARN=1 (planted orphans) ERROR=0; `make gx-check` passes; `make quality` writes OpenLineage START/COMPLETE.
+- `make dagster-validate` passes; `make airflow-check` (py_compile).
+- `make contracts-check` finds all 62 schema_drift + 62 type_drift labels in frozen v1 (exits 1 by design); clean synthetic data passes.
+- `make helm-lint` (strict, default/EKS/AKS) and `make compose-validate` (`docker compose config`) pass; `terraform fmt -check` passes.
+- All 72 keywords verified in code/config (docs/KEYWORD_MAP.md).
+
+### Not validated
+- `terraform init/validate/plan` (AWS and Azure): proxy blocks registry.terraform.io (403). No `.terraform.lock.hcl`. Run `make tf-aws-validate` / `make tf-azure-validate` with registry access.
+- kubeconform: binary download blocked; manifests only `helm lint` + `helm template`.
+- Nothing started: no containers, cluster, broker, scheduler, cloud resource.
+- GitHub Actions: account billing lock; no workflow has run. No bot-authored PRs possible; all PRs from the owner token; no deliberate gaps.
+
+### Needs keys / setup (real mode)
+- See docs/SETUP.md; `make bootstrap` checks per-layer env vars and writes `.env`.
+- Debezium Avro converter jars under deploy/compose/connect-plugins/ before connectors register.
+- Postgres driver (psycopg) not declared; required for DATABASE_URL in real mode and multi-replica API.
+- Lambda layer with fastavro/pydantic/pyyaml (`lambda_layer_arns`).
+
+### Gaps
+- Eval gate still fails Inspect accuracy 0.78 < 0.90 (mock provider); needs recorded real fixtures.
+- AWS Lambda decodes CDC into an in-process bus; no forwarding to MSK yet. Azure Function forwards JSON, not Avro.
+- Nothing writes the Delta table Synapse reads; no matcher span in traces (demo doesn't call the matcher).
+- dbt reconciles customers and orders only (batches staged, not reconciled); recency rule not modelled in dbt.
+- Contracts nightly job fails by design on the frozen snapshot (opens issues); add continue-on-error if a green job is preferred.
+- Day 1 known gaps from #21, #22, #25 still on main.
+
 ## Day 2 (2026-11-05)
 
 Run mode: `STORE_BACKEND=local`, `MODEL_PROVIDER=mock`. All Day 2 PRs merged by the owner account.
