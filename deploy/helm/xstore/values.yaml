@@ -1,0 +1,134 @@
+# Defaults run in local/mock mode; cloud overlays: values-eks.yaml, values-aks.yaml.
+image:
+  repository: ghcr.io/jahnavi-yelamanchi/xstore
+  tag: ""  # defaults to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Non-secret environment shared by every workload.
+env:
+  STORE_BACKEND: local
+  MODEL_PROVIDER: mock
+extraEnv: []
+
+# Secrets are never created by this chart; reference Secrets you manage (External Secrets, CSI, kubectl).
+secrets:
+  # Mounted with envFrom into every workload, e.g. DATABASE_URL, ANTHROPIC_API_KEY, LANGFUSE_*.
+  existingSecret: ""
+  # Optional extra Secrets, each loaded with envFrom.
+  extraExistingSecrets: []
+
+serviceAccount:
+  create: true
+  name: ""
+  # EKS IRSA: eks.amazonaws.com/role-arn; AKS workload identity: azure.workload.identity/client-id.
+  annotations: {}
+  automountServiceAccountToken: false
+
+podAnnotations: {}
+# AKS workload identity also needs azure.workload.identity/use: "true" here (see values-aks.yaml).
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  runAsGroup: 10001
+  fsGroup: 10001
+  seccompProfile: {type: RuntimeDefault}
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities: {drop: [ALL]}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Mounts policy/policy.yaml and stores/mappings/*.yaml (chart files/ symlinks) over the image copies.
+config:
+  enabled: true
+
+api:
+  # SQLite on an emptyDir is per pod: keep 1 replica unless DATABASE_URL points at a shared DB.
+  replicaCount: 1
+  port: 8040
+  command: []  # image default: uvicorn xstore.proposals.app:app
+  env:
+    DATABASE_URL: sqlite:////data/proposals.db  # set to null when secrets.existingSecret provides it
+  resources:
+    requests: {cpu: 100m, memory: 256Mi}
+    limits: {cpu: "1", memory: 512Mi}
+  livenessProbe:
+    httpGet: {path: /healthz, port: http}
+    initialDelaySeconds: 10
+    periodSeconds: 15
+  readinessProbe:
+    httpGet: {path: /healthz, port: http}
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  service:
+    type: ClusterIP
+    port: 80
+
+dagster:
+  enabled: false
+  image:
+    repository: ghcr.io/jahnavi-yelamanchi/xstore-dagster
+    tag: ""
+  port: 3000
+  module: xstore.orchestration.definitions
+  resources:
+    requests: {cpu: 100m, memory: 512Mi}
+    limits: {cpu: "1", memory: 1Gi}
+  readinessProbe:
+    httpGet: {path: /server_info, port: http}
+    initialDelaySeconds: 15
+    periodSeconds: 15
+  livenessProbe:
+    httpGet: {path: /server_info, port: http}
+    initialDelaySeconds: 30
+    periodSeconds: 30
+  service:
+    type: ClusterIP
+    port: 3000
+
+reconcile:
+  enabled: true
+  schedule: "17 */6 * * *"
+  concurrencyPolicy: Forbid
+  backoffLimit: 1
+  activeDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  # Placeholder until the Dagster job lands; then: [dagster, job, execute, -m, <module>, -j, reconcile]
+  command: [python, -m, xstore.pipeline.demo, --workdir, /data/demo]
+  resources:
+    requests: {cpu: 250m, memory: 512Mi}
+    limits: {cpu: "2", memory: 2Gi}
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1
+
+networkPolicy:
+  enabled: true
+  # Namespaces allowed to reach the API (ingress controller, Prometheus); empty = same namespace only.
+  ingressNamespaceSelectors: []
+  # Egress is open by default (stores and LLM endpoints are external); set false to restrict to DNS.
+  allowAllEgress: true
+
+metrics:
+  serviceMonitor:
+    enabled: false
+    path: /metrics
+    interval: 30s
+    labels: {}

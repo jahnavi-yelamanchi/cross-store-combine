@@ -1,0 +1,2 @@
+# containerd mirror: pulls of localhost:5001/* go to the kind-registry container.
+[host."http://kind-registry:5000"]

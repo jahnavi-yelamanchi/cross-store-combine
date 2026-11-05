@@ -1,0 +1,56 @@
+# AKS overlay: Entra workload identity for Cosmos DB/ADLS, Anthropic provider, managed secret.
+#   helm upgrade --install xstore deploy/helm/xstore -f deploy/helm/xstore/values-aks.yaml
+image:
+  repository: xstoreacr.azurecr.io/xstore
+
+env:
+  STORE_BACKEND: real
+  MODEL_PROVIDER: anthropic
+  COSMOS_ENDPOINT: https://xstore-cosmos.documents.azure.com:443/
+  AZURE_STORAGE_ACCOUNT: xstorelake
+
+secrets:
+  # Synced by the Secrets Store CSI driver from Key Vault:
+  # DATABASE_URL, MONGO_URI, ANTHROPIC_API_KEY, LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY.
+  existingSecret: xstore-runtime
+
+serviceAccount:
+  annotations:
+    azure.workload.identity/client-id: 00000000-0000-0000-0000-000000000000
+  # The workload identity webhook projects the federated token through the SA.
+  automountServiceAccountToken: true
+
+podLabels:
+  azure.workload.identity/use: "true"
+
+api:
+  replicaCount: 2
+  env:
+    DATABASE_URL: null  # from secrets.existingSecret
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+
+podDisruptionBudget:
+  enabled: true
+
+dagster:
+  enabled: true
+  image:
+    repository: xstoreacr.azurecr.io/xstore-dagster
+
+reconcile:
+  command: [dagster, job, execute, -m, xstore.orchestration.definitions, -j, reconcile]
+
+metrics:
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+
+networkPolicy:
+  ingressNamespaceSelectors:
+    - matchLabels: {kubernetes.io/metadata.name: app-routing-system}
+    - matchLabels: {kubernetes.io/metadata.name: monitoring}

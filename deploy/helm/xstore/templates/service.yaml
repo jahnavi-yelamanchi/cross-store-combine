@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xstore.fullname" . }}-api
+  labels:
+    {{- include "xstore.labels" . | nindent 4 }}
+    app.kubernetes.io/component: api
+spec:
+  type: {{ .Values.api.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.api.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "xstore.selectorLabels" (dict "ctx" $ "component" "api") | nindent 4 }}
+{{- if .Values.dagster.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xstore.fullname" . }}-dagster
+  labels:
+    {{- include "xstore.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dagster
+spec:
+  type: {{ .Values.dagster.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.dagster.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "xstore.selectorLabels" (dict "ctx" $ "component" "dagster") | nindent 4 }}
+{{- end }}
