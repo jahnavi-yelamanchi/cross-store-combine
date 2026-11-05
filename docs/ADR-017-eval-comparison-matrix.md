@@ -1,0 +1,7 @@
+# ADR-017: Hybrid Splink + LLM tiebreak, evaluated as a comparison matrix on frozen ground truth
+
+- Context: we need evidence that the hybrid (Splink match band auto, tiebreak band to the LLM agent) beats Splink-only and LLM-only on quality per dollar, and that policy-chosen fixes never write a wrong value unattended.
+- Decision: `scripts/run_matrix.py` runs splink_only / llm_only / hybrid x haiku|sonnet x batch|streaming (CDC replay through the Avro in-process bus) plus a newest-wins policy ablation over evals/frozen/v1, scoring a deterministic baseline detector against the split's labels only; cost = tokens x evals/prices.yaml with cache reads/writes priced separately; Inspect AI scores tiebreak verdicts, promptfoo guards the prompt.
+- Alternative rejected: reporting one headline number from the hybrid run, or LLM-graded quality without labels.
+- Why: the matrix shows where the LLM pays for itself (tiebreak band only: ~214 of ~60k pairs) and isolates detector, matcher, model and policy effects; frozen labels make runs reproducible in CI.
+- Consequence: with MODEL_PROVIDER=mock, agent verdicts and tokens are simulated and every row is labelled `simulated`, so model comparisons measure the harness until fixtures are recorded; auto-apply is gated to agreement/only_source/field_override rules because ungated policy picks gave ~12% bad writes; llm_only judges every differing-key pair and extrapolates cost from a sample of equal-key pairs.
