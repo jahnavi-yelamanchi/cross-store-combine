@@ -1,0 +1,9 @@
+# Run with: uv run python -m xstore.quality.run_checkpoint
+# GX 1.x keeps checkpoints in code; this file names what xstore.quality.run_checkpoint
+# wires into an ephemeral context. Paths to suites are relative to great_expectations/.
+name: canonical
+# Overridden by --warehouse or XSTORE_WAREHOUSE.
+warehouse: runs/warehouse.duckdb
+validations:
+  - table: canonical_customers
+    suite: expectations/canonical_customers.json

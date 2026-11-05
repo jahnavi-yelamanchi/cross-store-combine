@@ -1,0 +1,17 @@
+{
+  "name": "canonical_customers",
+  "meta": {"notes": "Resolved customers built by dbt (dbt/models/marts/canonical_customers.sql)."},
+  "expectations": [
+    {"type": "expect_column_values_to_not_be_null", "kwargs": {"column": "customer_id"}},
+    {"type": "expect_column_values_to_be_unique", "kwargs": {"column": "customer_id"}},
+    {
+      "type": "expect_column_values_to_match_regex",
+      "kwargs": {"column": "email", "regex": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "mostly": 0.95}
+    },
+    {"type": "expect_column_value_lengths_to_equal", "kwargs": {"column": "country", "value": 2}},
+    {
+      "type": "expect_column_values_to_be_between",
+      "kwargs": {"column": "n_sources", "min_value": 1, "max_value": 7}
+    }
+  ]
+}
