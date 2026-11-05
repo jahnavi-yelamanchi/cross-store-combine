@@ -26,6 +26,8 @@ from xstore.cdc import InProcessBus, pump
 from xstore.entities import ENTITY_TYPES, load_mapping
 from xstore.ledger import FixApproved, Ledger, apply_pending, create_ledger
 from xstore.ledger.replay import replay
+from xstore.observability.instrument import observe_detect, observe_lag, observe_proposal
+from xstore.observability.tracing import set_attrs, span
 from xstore.policy import PolicyEngine, Resolution, load_policy
 from xstore.proposals import Evidence, Fix, Lineage, Proposal, ProposalCreate, SqlRepository
 from xstore.proposals.app import create_app
@@ -298,95 +300,138 @@ def run_demo(
     workdir: Path,
     stores: Sequence[str] = DEFAULT_STORES,
 ) -> DemoReport:
-    workdir = Path(workdir)
     run_id = f"demo-s{seed}-c{n_customers}-i{n_injections}"
+    with span("pipeline.run", run_id=run_id, seed=seed, stores=",".join(stores)) as sp:
+        out = _run_demo(n_customers, n_injections, seed, Path(workdir), stores, run_id)
+        set_attrs(
+            sp, detections=len(out.detections), applied=out.applied, bad_writes=out.bad_writes
+        )
+    return out
+
+
+def _run_demo(
+    n_customers: int,
+    n_injections: int,
+    seed: int,
+    workdir: Path,
+    stores: Sequence[str],
+    run_id: str,
+) -> DemoReport:
     policy = load_policy(POLICY_PATH)
     engine = PolicyEngine(policy)
 
     # a. seed: synthetic company -> baseline snapshot -> local stores
-    full = generate(seed, customers=n_customers, orders=0, batches=max(n_customers // 2, 1))
-    data: Native = {
-        s: {e: recs for e, recs in full[s].items() if e in ENTITIES} for s in stores if s in full
-    }
-    _write_snapshot(workdir / "snapshot", data)
-    live = seed_stores(load_snapshot(workdir / "snapshot", stores))
-    bus, cursors = InProcessBus(), dict[str, int]()
-    cdc_events = pump(live.values(), bus, cursors)
-    bus.poll(GROUP)  # detector starts after the seed load
+    with span("pipeline.seed"):
+        full = generate(seed, customers=n_customers, orders=0, batches=max(n_customers // 2, 1))
+        data: Native = {
+            s: {e: recs for e, recs in full[s].items() if e in ENTITIES}
+            for s in stores
+            if s in full
+        }
+        _write_snapshot(workdir / "snapshot", data)
+        live = seed_stores(load_snapshot(workdir / "snapshot", stores))
+        bus, cursors = InProcessBus(), dict[str, int]()
+        cdc_events = pump(live.values(), bus, cursors)
+        bus.poll(GROUP)  # detector starts after the seed load
 
     # b. inject value-level drift through Store.write so it flows through the outboxes
-    injected = copy.deepcopy(data)
-    kinds = [k for k in VALUE_KINDS if _candidates(injected, k)]
-    plan = [kinds[i % len(kinds)] for i in range(n_injections)]
-    random.Random(seed).shuffle(plan)
-    inj = _Injector(injected, seed)
-    labels = [inj.apply(f"inj-{i:04d}", k) for i, k in enumerate(plan)]
-    _write_snapshot(workdir / "snapshot_injected", injected)  # replay base, see ADR-018
-    effective = _apply_injections(live, injected, labels)
-    observable = [lab for lab in effective if _observable(lab, live)]
+    with span("pipeline.inject", injections=n_injections):
+        injected = copy.deepcopy(data)
+        kinds = [k for k in VALUE_KINDS if _candidates(injected, k)]
+        plan = [kinds[i % len(kinds)] for i in range(n_injections)]
+        random.Random(seed).shuffle(plan)
+        inj = _Injector(injected, seed)
+        labels = [inj.apply(f"inj-{i:04d}", k) for i, k in enumerate(plan)]
+        _write_snapshot(workdir / "snapshot_injected", injected)  # replay base, see ADR-018
+        effective = _apply_injections(live, injected, labels)
+        observable = [lab for lab in effective if _observable(lab, live)]
 
     # c. detect: CDC -> bus -> touched keys -> policy resolve
-    cdc_events += pump(live.values(), bus, cursors)
-    touched = sorted({(e.entity_type, e.key) for e in bus.poll(GROUP)})
-    detector = Detector(live, engine)
-    detections: list[Detection] = []
-    by_key: dict[tuple[str, str], tuple[list[Detection], Resolution, dict[str, Any]]] = {}
-    for et, key in touched:
-        rows, res, native = detector.detect(et, key)
-        if rows and res is not None:
-            detections.extend(rows)
-            by_key[(et, key)] = (rows, res, native)
+    with span("pipeline.pump") as sp:
+        cdc_events += pump(live.values(), bus, cursors)
+        set_attrs(sp, cdc_lag=observe_lag(bus, GROUP))
+    with span("pipeline.detect") as sp:
+        events = bus.poll(GROUP)
+        observe_lag(bus, GROUP)
+        touched = sorted({(e.entity_type, e.key) for e in events})
+        first_ts: dict[tuple[str, str], int] = {}
+        for e in events:
+            first_ts[(e.entity_type, e.key)] = min(
+                e.ts_ms, first_ts.get((e.entity_type, e.key), e.ts_ms)
+            )
+        detector = Detector(live, engine)
+        detections: list[Detection] = []
+        by_key: dict[tuple[str, str], tuple[list[Detection], Resolution, dict[str, Any]]] = {}
+        for et, key in touched:
+            rows, res, native = detector.detect(et, key)
+            if rows and res is not None:
+                detections.extend(rows)
+                by_key[(et, key)] = (rows, res, native)
+        observe_detect(sp, detections, len(touched))
 
     # e/f. propose over the FastAPI approval API; approval appends FixApproved to the ledger
     ledger = create_ledger("sqlite://")
     client = TestClient(create_app(SqlRepository.from_env("sqlite://"), _on_approve(ledger)))
     keys_by_pid: dict[str, tuple[str, str]] = {}
-    for (et, key), (rows, res, native) in by_key.items():
-        for target in sorted(_target_stores(rows, res, engine)):
-            mine = [r for r in rows if target in r.stores]
-            record = _fix_record(target, et, res, native.get(target))
-            if native.get(target) is not None and record == _jsonable(native[target]):
-                continue
-            body = ProposalCreate(
-                fix=Fix(
-                    target_store=target, entity_type=et, key=key, action="upsert", record=record
-                ),
-                evidence=[
-                    Evidence(store=s, entity_type=et, key=key, value=_jsonable(v), source="store")
-                    for s, v in native.items()
-                ],
-                confidence=min(r.confidence for r in mine),
-                lineage=Lineage(
-                    run_id=run_id,
-                    detector=DETECTOR,
-                    detection_type=mine[0].type,
-                    policy_version=res.policy_version,
-                    policy_digest=res.policy_digest,
-                    cdc_seq=dict(cursors),
-                ),
-            )
-            resp = client.post("/proposals", json=body.model_dump(mode="json"))
-            resp.raise_for_status()
-            keys_by_pid[resp.json()["id"]] = (et, key)
-    safe = len(client.get("/proposals", params={"status": "pending", "safe": True}).json())
-    resp = client.post(
-        "/proposals/approve-safe", json={"decided_by": "auto-safe", "reason": "confidence>=0.9"}
-    )
-    resp.raise_for_status()
-    approved: list[str] = resp.json()["approved"]
+    with span("pipeline.propose") as sp:
+        for (et, key), (rows, res, native) in by_key.items():
+            for target in sorted(_target_stores(rows, res, engine)):
+                mine = [r for r in rows if target in r.stores]
+                record = _fix_record(target, et, res, native.get(target))
+                if native.get(target) is not None and record == _jsonable(native[target]):
+                    continue
+                body = ProposalCreate(
+                    fix=Fix(
+                        target_store=target, entity_type=et, key=key, action="upsert", record=record
+                    ),
+                    evidence=[
+                        Evidence(
+                            store=s, entity_type=et, key=key, value=_jsonable(v), source="store"
+                        )
+                        for s, v in native.items()
+                    ],
+                    confidence=min(r.confidence for r in mine),
+                    lineage=Lineage(
+                        run_id=run_id,
+                        detector=DETECTOR,
+                        detection_type=mine[0].type,
+                        policy_version=res.policy_version,
+                        policy_digest=res.policy_digest,
+                        cdc_seq=dict(cursors),
+                    ),
+                )
+                resp = client.post("/proposals", json=body.model_dump(mode="json"))
+                resp.raise_for_status()
+                keys_by_pid[resp.json()["id"]] = (et, key)
+                observe_proposal(resp.json()["status"], first_ts.get((et, key)))
+        set_attrs(sp, proposals=len(keys_by_pid))
+    with span("pipeline.approve") as sp:
+        safe = len(client.get("/proposals", params={"status": "pending", "safe": True}).json())
+        resp = client.post(
+            "/proposals/approve-safe", json={"decided_by": "auto-safe", "reason": "confidence>=0.9"}
+        )
+        resp.raise_for_status()
+        approved: list[str] = resp.json()["approved"]
+        for _ in approved:
+            observe_proposal("approved")
+        set_attrs(sp, safe=safe, approved=len(approved))
 
     # g. apply exactly once; a second pass must be a no-op
-    report = apply_pending(ledger, live)
-    again = apply_pending(ledger, live)
-    cdc_events += pump(live.values(), bus, cursors)
-    bus.poll(GROUP)
+    with span("pipeline.apply"):
+        report = apply_pending(ledger, live)
+        again = apply_pending(ledger, live)
+        cdc_events += pump(live.values(), bus, cursors)
+        bus.poll(GROUP)
+        observe_lag(bus, GROUP)
     approved_keys = {keys_by_pid[p] for p in approved} - {
         keys_by_pid[p] for p in keys_by_pid if p not in approved
     }
     after = [r for et, key in by_key for r in detector.detect(et, key)[0]]
 
     # h. replay applied fixes on fresh stores seeded from the post-injection snapshot
-    rep = replay(ledger, workdir / "snapshot_injected")
+    with span("pipeline.replay") as sp:
+        rep = replay(ledger, workdir / "snapshot_injected")
+        set_attrs(sp, ok=rep.ok, fixes=rep.fixes_replayed)
     hits = [lab for lab in observable if _detected(lab, detections)]
     return DemoReport(
         run_id=run_id,

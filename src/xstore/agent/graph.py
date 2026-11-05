@@ -23,6 +23,8 @@ from xstore.agent.models import (
     Usage,
 )
 from xstore.agent.providers import ModelProvider, get_provider
+from xstore.observability.instrument import observe_tiebreak
+from xstore.observability.tracing import span
 from xstore.stores import Store
 
 SYSTEM_PROMPT_PATH = Path(__file__).with_name("prompts") / "tiebreak.md"
@@ -113,6 +115,12 @@ class TiebreakAgent:
         return {"needs_human": False}
 
     async def arun(self, request: TiebreakRequest) -> TiebreakResult:
+        with span("agent.tiebreak", pair_id=request.pair_id) as s:
+            result = await self._arun(request)
+            observe_tiebreak(s, result)
+        return result
+
+    async def _arun(self, request: TiebreakRequest) -> TiebreakResult:
         start = time.perf_counter()
         state: dict[str, Any] = await self.graph.ainvoke({"request": request})
         return TiebreakResult(
