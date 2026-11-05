@@ -1,4 +1,4 @@
-.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api policy-check
+.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api policy-check match
 
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
@@ -39,3 +39,6 @@ proposals-api:
 
 policy-check:
 	uv run python -m xstore.policy check policy/policy.yaml
+
+match:
+	uv run python -m xstore.matching --data evals/frozen/v1 --out runs/matches.parquet
