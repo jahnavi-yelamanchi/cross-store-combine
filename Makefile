@@ -1,5 +1,7 @@
 .PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api policy-check match replay e2e demo-local eval report
 
+# `make bootstrap` writes .env (STORE_BACKEND=real); `make local` removes it.
+-include .env
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
 
@@ -59,3 +61,6 @@ eval:
 
 report:
 	uv run python scripts/report.py --runs runs --out results
+
+# Per-area targets live in mk/<area>.mk so parallel branches don't collide here.
+-include $(wildcard mk/*.mk)
