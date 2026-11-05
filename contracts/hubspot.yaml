@@ -1,0 +1,114 @@
+# Data contract (data product owned by crm-team). Bootstrapped by scripts/gen_contracts.py.
+dataContractSpecification: 1.1.0
+id: urn:datacontract:xstore:hubspot
+store: hubspot
+info:
+  title: hubspot data product
+  version: 1.0.0
+  owner: crm-team
+  domain: crm
+  description: Contacts and deals managed by sales in HubSpot.
+  contact:
+    name: crm-team
+    channel: '#crm-team'
+policy:
+  schemaDrift: fail
+  missingField: fail
+  enum: fail
+  typeDrift: warn
+  typeDriftThreshold: 0.01
+models:
+  customer:
+    description: Customer records as hubspot stores them natively.
+    table: contacts
+    primaryKey: id
+    freshness:
+      field: lastmodifieddate
+      maxAgeHours: 24
+    fields:
+      id:
+        type: string
+        canonical: Customer.customer_id
+        required: true
+        primaryKey: true
+      firstname:
+        type: string
+        canonical: Customer.name
+        required: true
+      email:
+        type: string
+        canonical: Customer.email
+        format: email
+        pii: true
+      phone:
+        type: string
+        canonical: Customer.phone
+        pii: true
+      country:
+        type: string
+        canonical: Customer.country
+      lastmodifieddate:
+        type: timestamp
+        canonical: Customer.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: id
+    - type: length
+      field: country
+      min: 2
+      max: 2
+  order:
+    description: Order records as hubspot stores them natively.
+    table: deals
+    primaryKey: id
+    freshness:
+      field: lastmodifieddate
+      maxAgeHours: 1
+    fields:
+      id:
+        type: string
+        canonical: Order.order_id
+        required: true
+        primaryKey: true
+      associated_contact_id:
+        type: string
+        canonical: Order.customer_id
+        required: true
+      amount:
+        type: decimal
+        canonical: Order.amount
+        required: true
+        unit: currency_major
+      deal_currency_code:
+        type: string
+        canonical: Order.currency
+        required: true
+      dealstage:
+        type: string
+        canonical: Order.status
+        required: true
+        enum:
+        - appointmentscheduled
+        - closedwon
+        - contractsent
+        - closedlost
+        - refunded
+      createdate:
+        type: timestamp
+        canonical: Order.ordered_at
+        required: true
+      lastmodifieddate:
+        type: timestamp
+        canonical: Order.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: id
+    - type: range
+      field: amount
+      min: 0
+    - type: length
+      field: deal_currency_code
+      min: 3
+      max: 3

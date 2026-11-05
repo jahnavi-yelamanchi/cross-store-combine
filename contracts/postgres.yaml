@@ -1,0 +1,165 @@
+# Data contract (data product owned by orders-platform). Bootstrapped by scripts/gen_contracts.py.
+dataContractSpecification: 1.1.0
+id: urn:datacontract:xstore:postgres
+store: postgres
+info:
+  title: postgres data product
+  version: 1.0.0
+  owner: orders-platform
+  domain: orders
+  description: System of record for orders and production.
+  contact:
+    name: orders-platform
+    channel: '#orders-platform'
+policy:
+  schemaDrift: fail
+  missingField: fail
+  enum: fail
+  typeDrift: warn
+  typeDriftThreshold: 0.01
+models:
+  customer:
+    description: Customer records as postgres stores them natively.
+    table: customers
+    primaryKey: id
+    freshness:
+      field: updated_at
+      maxAgeHours: 24
+    fields:
+      id:
+        type: string
+        canonical: Customer.customer_id
+        required: true
+        primaryKey: true
+      full_name:
+        type: string
+        canonical: Customer.name
+        required: true
+      email:
+        type: string
+        canonical: Customer.email
+        format: email
+        pii: true
+      phone:
+        type: string
+        canonical: Customer.phone
+        pii: true
+      country_code:
+        type: string
+        canonical: Customer.country
+      updated_at:
+        type: timestamp
+        canonical: Customer.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: id
+    - type: length
+      field: country_code
+      min: 2
+      max: 2
+  order:
+    description: Order records as postgres stores them natively.
+    table: orders
+    primaryKey: id
+    freshness:
+      field: updated_at
+      maxAgeHours: 1
+    fields:
+      id:
+        type: string
+        canonical: Order.order_id
+        required: true
+        primaryKey: true
+      customer_id:
+        type: string
+        canonical: Order.customer_id
+        required: true
+      amount_cents:
+        type: integer
+        canonical: Order.amount
+        required: true
+        unit: cents
+      currency:
+        type: string
+        canonical: Order.currency
+        required: true
+      status:
+        type: string
+        canonical: Order.status
+        required: true
+        enum:
+        - pending
+        - paid
+        - shipped
+        - cancelled
+        - refunded
+      ordered_at:
+        type: timestamp
+        canonical: Order.ordered_at
+        required: true
+      updated_at:
+        type: timestamp
+        canonical: Order.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: id
+    - type: range
+      field: amount_cents
+      min: 0
+    - type: length
+      field: currency
+      min: 3
+      max: 3
+  batch:
+    description: Batch records as postgres stores them natively.
+    table: batches
+    primaryKey: id
+    freshness:
+      field: updated_at
+      maxAgeHours: 6
+    fields:
+      id:
+        type: string
+        canonical: Batch.batch_id
+        required: true
+        primaryKey: true
+      sku:
+        type: string
+        canonical: Batch.sku
+        required: true
+      qty:
+        type: integer
+        canonical: Batch.quantity
+        required: true
+        unit: each
+      weight_kg:
+        type: number
+        canonical: Batch.weight_kg
+        required: true
+        unit: kg
+      warehouse:
+        type: string
+        canonical: Batch.warehouse
+        required: true
+      produced_at:
+        type: timestamp
+        canonical: Batch.produced_at
+        required: true
+      expires_at:
+        type: timestamp
+        canonical: Batch.expires_at
+      updated_at:
+        type: timestamp
+        canonical: Batch.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: id
+    - type: range
+      field: qty
+      min: 0
+    - type: range
+      field: weight_kg
+      min: 0
