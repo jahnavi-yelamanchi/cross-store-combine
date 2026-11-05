@@ -1,0 +1,11 @@
+# Eval gate thresholds. Gate reads runs/*.jsonl (schema: scripts/eval_gate.py).
+gate:
+  config: hybrid
+  split: holdout
+  min_f1: 0.80
+  min_recall: 0.75
+  max_bad_write_rate: 0.0
+  max_cost_per_1k_usd: 1.00
+inspect:
+  task: tiebreak
+  min_accuracy: 0.90

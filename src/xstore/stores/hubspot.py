@@ -17,6 +17,10 @@ import httpx
 from xstore.entities import load_mapping
 from xstore.stores.base import ChangeEvent, Op, WriteResult
 
+# httpx.Client in real mode; Starlette TestClient (httpx2) locally. No common base class.
+HttpClient = Any
+
+
 REAL_BASE_URL = "https://api.hubapi.com"
 OBJECTS = "/crm/v3/objects"
 OPS: dict[str, Op] = {"creation": "c", "propertyChange": "u", "deletion": "d"}
@@ -33,7 +37,7 @@ def _to_str(value: Any) -> str:
 class HubSpotStore:
     name = "hubspot"
 
-    def __init__(self, client: httpx.Client, has_change_log: bool = True) -> None:
+    def __init__(self, client: HttpClient, has_change_log: bool = True) -> None:
         self.client = client
         self.has_change_log = has_change_log
         self.mapping = load_mapping(self.name)
@@ -129,7 +133,7 @@ class HubSpotStore:
             )
 
 
-def create_store(backend: str, client: httpx.Client | None = None) -> HubSpotStore:
+def create_store(backend: str, client: HttpClient | None = None) -> HubSpotStore:
     if client is not None:
         return HubSpotStore(client)
     if backend == "local":
