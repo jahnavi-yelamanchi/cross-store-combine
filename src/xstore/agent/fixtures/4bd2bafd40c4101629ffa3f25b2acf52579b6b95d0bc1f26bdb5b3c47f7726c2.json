@@ -1,0 +1,20 @@
+{
+  "decision": {
+    "confidence": 0.93,
+    "evidence_fields": [
+      "email",
+      "phone",
+      "name",
+      "country"
+    ],
+    "rationale": "Different emails on different domains, different phone numbers and countries (US vs GB), and unrelated names; nothing identifying agrees.",
+    "same_entity": false
+  },
+  "model": "claude-sonnet-4-5",
+  "usage": {
+    "cache_read_tokens": 1053,
+    "cache_write_tokens": 0,
+    "input_tokens": 394,
+    "output_tokens": 68
+  }
+}
