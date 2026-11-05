@@ -15,9 +15,9 @@ build/
 runs/
 .terraform/
 *.tfstate*
+terraform.tfvars
+terraform/aws/.build/
 target/
 logs/
 dbt_packages/
 .DS_Store
-terraform/aws/.build/
-terraform.tfvars
