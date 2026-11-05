@@ -1,4 +1,4 @@
-.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen
+.PHONY: install lint fmt typecheck smoke test check crm freeze verify-frozen proposals-api
 
 export STORE_BACKEND ?= local
 export MODEL_PROVIDER ?= mock
@@ -33,3 +33,6 @@ verify-frozen:
 
 crm:
 	uv run uvicorn xstore.crm.app:app --port 8030
+
+proposals-api:
+	uv run uvicorn xstore.proposals.app:app --port 8040
