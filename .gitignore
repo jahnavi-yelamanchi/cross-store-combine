@@ -16,6 +16,8 @@ runs/*
 !runs/.gitkeep
 .terraform/
 *.tfstate*
+terraform.tfvars
+terraform/aws/.build/
 target/
 logs/
 dbt_packages/
