@@ -1,0 +1,49 @@
+{{- if .Values.reconcile.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "xstore.fullname" . }}-reconcile
+  labels:
+    {{- include "xstore.labels" . | nindent 4 }}
+    app.kubernetes.io/component: reconcile
+spec:
+  schedule: {{ .Values.reconcile.schedule | quote }}
+  concurrencyPolicy: {{ .Values.reconcile.concurrencyPolicy }}
+  successfulJobsHistoryLimit: {{ .Values.reconcile.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.reconcile.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.reconcile.backoffLimit }}
+      activeDeadlineSeconds: {{ .Values.reconcile.activeDeadlineSeconds }}
+      template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          labels:
+            {{- include "xstore.podLabels" (dict "ctx" $ "component" "reconcile") | nindent 12 }}
+        spec:
+          restartPolicy: Never
+          {{- include "xstore.podSpecCommon" . | nindent 10 }}
+          containers:
+            - name: reconcile
+              image: {{ include "xstore.image" . }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              command:
+                {{- toYaml .Values.reconcile.command | nindent 16 }}
+              env:
+                {{- include "xstore.env" (dict "ctx" $ "env" dict) | trim | nindent 16 }}
+              {{- with (include "xstore.envFrom" .) }}
+              envFrom:
+                {{- . | trim | nindent 16 }}
+              {{- end }}
+              resources:
+                {{- toYaml .Values.reconcile.resources | nindent 16 }}
+              securityContext:
+                {{- toYaml .Values.securityContext | nindent 16 }}
+              volumeMounts:
+                {{- include "xstore.volumeMounts" . | nindent 16 }}
+          volumes:
+            {{- include "xstore.volumes" . | nindent 12 }}
+{{- end }}

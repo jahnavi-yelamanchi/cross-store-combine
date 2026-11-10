@@ -1,0 +1,53 @@
+# EKS overlay: IRSA for DynamoDB/S3, Anthropic provider, managed secret.
+#   helm upgrade --install xstore deploy/helm/xstore -f deploy/helm/xstore/values-eks.yaml
+image:
+  repository: 123456789012.dkr.ecr.us-east-1.amazonaws.com/xstore
+
+env:
+  STORE_BACKEND: real
+  MODEL_PROVIDER: anthropic
+  AWS_REGION: us-east-1
+  XSTORE_S3_BUCKET: xstore-lake
+
+secrets:
+  # Created out of band (External Secrets Operator from AWS Secrets Manager):
+  # DATABASE_URL, MONGO_URI, ANTHROPIC_API_KEY, LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY.
+  existingSecret: xstore-runtime
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/xstore-irsa
+  # IRSA injects a projected token; the AWS SDK needs it mounted.
+  automountServiceAccountToken: true
+
+api:
+  replicaCount: 2
+  env:
+    DATABASE_URL: null  # from secrets.existingSecret
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 6
+
+podDisruptionBudget:
+  enabled: true
+
+dagster:
+  enabled: true
+  image:
+    repository: 123456789012.dkr.ecr.us-east-1.amazonaws.com/xstore-dagster
+
+reconcile:
+  command: [dagster, job, execute, -m, xstore.orchestration.definitions, -j, reconcile]
+
+metrics:
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+
+networkPolicy:
+  ingressNamespaceSelectors:
+    - matchLabels: {kubernetes.io/metadata.name: ingress-nginx}
+    - matchLabels: {kubernetes.io/metadata.name: monitoring}

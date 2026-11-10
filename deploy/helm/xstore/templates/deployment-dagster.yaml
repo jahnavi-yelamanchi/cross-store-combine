@@ -1,0 +1,55 @@
+{{- if .Values.dagster.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xstore.fullname" . }}-dagster
+  labels:
+    {{- include "xstore.labels" . | nindent 4 }}
+    app.kubernetes.io/component: dagster
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "xstore.selectorLabels" (dict "ctx" $ "component" "dagster") | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "xstore.podLabels" (dict "ctx" $ "component" "dagster") | nindent 8 }}
+    spec:
+      {{- include "xstore.podSpecCommon" . | nindent 6 }}
+      containers:
+        - name: webserver
+          image: {{ include "xstore.dagsterImage" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [dagster-webserver, -h, 0.0.0.0, -p, {{ .Values.dagster.port | quote }}, -m, {{ .Values.dagster.module | quote }}]
+          ports:
+            - name: http
+              containerPort: {{ .Values.dagster.port }}
+              protocol: TCP
+          env:
+            - name: DAGSTER_HOME
+              value: /data
+            {{- include "xstore.env" (dict "ctx" $ "env" dict) | trim | nindent 12 }}
+          {{- with (include "xstore.envFrom" .) }}
+          envFrom:
+            {{- . | trim | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.dagster.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.dagster.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.dagster.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            {{- include "xstore.volumeMounts" . | nindent 12 }}
+      volumes:
+        {{- include "xstore.volumes" . | nindent 8 }}
+{{- end }}
