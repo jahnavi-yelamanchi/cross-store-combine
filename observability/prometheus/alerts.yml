@@ -1,0 +1,19 @@
+groups:
+  - name: xstore
+    rules:
+      - alert: BadWritesNonZero
+        expr: sum(xstore_bad_writes_total) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: "xstore applied a fix whose read-back differs from the intended record"
+          description: "xstore_bad_writes_total is {{ $value }}; stop auto-apply and replay the ledger."
+      - alert: CdcLagHigh
+        expr: max by (group) (xstore_cdc_lag_events) > 1000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CDC consumer group {{ $labels.group }} is behind"
+          description: "{{ $value }} unconsumed CDC events for 10m."
