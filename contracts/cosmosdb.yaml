@@ -1,0 +1,111 @@
+# Data contract (data product owned by supply-chain). Bootstrapped by scripts/gen_contracts.py.
+dataContractSpecification: 1.1.0
+id: urn:datacontract:xstore:cosmosdb
+store: cosmosdb
+info:
+  title: cosmosdb data product
+  version: 1.0.0
+  owner: supply-chain
+  domain: supply-chain
+  description: Warehouse batches and B2B customers.
+  contact:
+    name: supply-chain
+    channel: '#supply-chain'
+policy:
+  schemaDrift: fail
+  missingField: fail
+  enum: fail
+  typeDrift: warn
+  typeDriftThreshold: 0.01
+models:
+  customer:
+    description: Customer records as cosmosdb stores them natively.
+    table: customers
+    primaryKey: id
+    freshness:
+      field: _updated
+      maxAgeHours: 24
+    fields:
+      id:
+        type: string
+        canonical: Customer.customer_id
+        required: true
+        primaryKey: true
+      displayName:
+        type: string
+        canonical: Customer.name
+        required: true
+      email:
+        type: string
+        canonical: Customer.email
+        format: email
+        pii: true
+      phone:
+        type: string
+        canonical: Customer.phone
+        pii: true
+      country:
+        type: string
+        canonical: Customer.country
+      _updated:
+        type: timestamp
+        canonical: Customer.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: id
+    - type: length
+      field: country
+      min: 2
+      max: 2
+  batch:
+    description: Batch records as cosmosdb stores them natively.
+    table: batches
+    primaryKey: id
+    freshness:
+      field: _updated
+      maxAgeHours: 6
+    fields:
+      id:
+        type: string
+        canonical: Batch.batch_id
+        required: true
+        primaryKey: true
+      sku:
+        type: string
+        canonical: Batch.sku
+        required: true
+      quantity:
+        type: integer
+        canonical: Batch.quantity
+        required: true
+        unit: each
+      weightLb:
+        type: number
+        canonical: Batch.weight_kg
+        required: true
+        unit: lb
+      site:
+        type: string
+        canonical: Batch.warehouse
+        required: true
+      producedAt:
+        type: timestamp
+        canonical: Batch.produced_at
+        required: true
+      expiresAt:
+        type: timestamp
+        canonical: Batch.expires_at
+      _updated:
+        type: timestamp
+        canonical: Batch.updated_at
+        required: true
+    quality:
+    - type: unique
+      field: id
+    - type: range
+      field: quantity
+      min: 0
+    - type: range
+      field: weightLb
+      min: 0
