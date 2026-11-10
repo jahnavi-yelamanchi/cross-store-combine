@@ -57,6 +57,10 @@ class InProcessBus:
             handler(event)
         return len(events)
 
+    def end_offsets(self, topic: str = TOPIC) -> dict[int, int]:
+        """Partition -> next offset (log end), like Kafka high watermarks."""
+        return {p: len(self._log.get((topic, p), [])) for p in range(self.partitions)}
+
     def lag(self, group: str, topic: str = TOPIC) -> int:
         return sum(
             len(self._log.get((topic, p), [])) - self._offsets.get((group, topic, p), 0)
