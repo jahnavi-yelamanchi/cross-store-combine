@@ -1,0 +1,21 @@
+# Copy to terraform.tfvars. Subscription comes from ARM_SUBSCRIPTION_ID, not from here.
+location = "westeurope"
+prefix   = "xstore"
+suffix   = "dev01"
+
+lake_allowed_ip_ranges = ["203.0.113.10/32"]
+
+synapse_allowed_ip_ranges = [
+  { name = "operator", start_ip = "203.0.113.10", end_ip = "203.0.113.10" },
+]
+
+enable_aks                 = false
+aks_oidc_issuer_url        = ""
+reconciler_namespace       = "xstore"
+reconciler_service_account = "xstore-reconciler"
+
+tags = {
+  project    = "xstore"
+  managed_by = "terraform"
+  env        = "dev"
+}
