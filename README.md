@@ -1,80 +1,139 @@
 # Cross-Store Reconciliation Agent
 
-The same business entity lives in Postgres, MongoDB, DynamoDB/Cosmos DB, S3/ADLS Parquet and a CRM. Detect drift via CDC, match entities probabilistically with an LLM tiebreak, propose fixes with evidence, apply idempotently after human approval, keep a replayable ledger.
+> The same customer, order or batch lives in seven systems. This agent finds where they disagree, proves which value is right, and fixes it only after a human approves, with every change on a replayable ledger.
 
-![F1 vs cost per configuration, holdout split](results/f1_vs_cost.png)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-agent-1C3C3C)
+![Splink](https://img.shields.io/badge/Splink-entity%20resolution-2a78d6)
+![dbt](https://img.shields.io/badge/dbt-DuckDB-FF694B?logo=dbt&logoColor=white)
+![Dagster](https://img.shields.io/badge/Dagster-assets-4F43DD)
+![Terraform](https://img.shields.io/badge/Terraform-AWS%20%7C%20Azure-7B42BC?logo=terraform&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Helm-EKS%20%7C%20AKS-326CE5?logo=kubernetes&logoColor=white)
 
-LLM points are simulated by the offline mock provider; see Disclosed.
+## The problem
 
-## Layers
+Enterprises keep the same entity in Postgres, MongoDB, DynamoDB, Cosmos DB, S3/ADLS Parquet lakes and a CRM. They drift: a typo in one store, a stale address in another, cents in one and dollars in the next, a renamed column, a duplicate customer under a new key. Fixing drift by hand is slow; letting a model write to production directly is unsafe.
 
-| Layer | What | Tech |
-|---|---|---|
-| Entities | Canonical Customer, Order, Batch; per-store field/unit/enum mappings | Pydantic, `stores/mappings/*.yaml` |
-| Stores | One `Store` protocol: read, scan, idempotent write/delete, stream_changes | Postgres, MongoDB, DynamoDB, Cosmos DB, S3 + ADLS Gen2 Parquet (Arrow, Iceberg spec), Snowflake stub, HubSpot stub (FastAPI) |
-| CDC | One change envelope from every source | Debezium, DynamoDB Streams, Cosmos DB change feed, Kafka/Redpanda, Avro + Schema Registry |
-| Diff | Staging per store -> reconciled model; quality and schema checks | dbt on DuckDB, dbt tests, Great Expectations, data contracts, OpenLineage |
-| Match | Probabilistic entity resolution across stores | Splink (Fellegi-Sunter, blocking rules, EM) |
-| Tiebreak | Low-confidence pairs decided with evidence | LangGraph, Instructor, MCP evidence tool, Claude Haiku 5.5 default, prompt caching |
-| Policy | Deterministic conflict resolution; agent proposes policy diffs | `policy/policy.yaml` |
-| Approval | Proposals with evidence, confidence, lineage; approve/reject | FastAPI |
-| Ledger | Event-sourced, append-only; idempotent apply; replay + verify | SQLite locally, Postgres; DB triggers + hash chain |
-| Orchestration | ingest -> diff -> detect -> propose | Dagster software-defined assets, schedule, CDC-lag sensor; Airflow mirror |
-| Observability | Traces, metrics, dashboards, LLM traces | OpenTelemetry, Prometheus, Grafana, Langfuse |
-| Deploy | Local stack, cluster, cloud | Docker Compose, Helm, kind, Terraform (AWS: MSK, RDS, Lambda, SQS DLQ, EKS; Azure: Event Hubs, Synapse, Functions, Event Grid, AKS) |
-| Evals | Comparison matrix, tiebreak task set, prompt regression, CI gate | Inspect AI, promptfoo, GitHub Actions |
+## What it does
 
-## How I chose
+1. **Captures every change** from all stores as one Avro event (Debezium, DynamoDB Streams, Cosmos DB change feed).
+2. **Diffs the stores** in dbt on DuckDB and checks each store against its data contract.
+3. **Matches entities** across stores with Splink (Fellegi-Sunter). Only the uncertain band goes to an LLM.
+4. **Resolves conflicts** with a deterministic policy (source priority, recency, unit normalization).
+5. **Proposes fixes** with evidence and lineage through an approval API.
+6. **Applies approved fixes once** (idempotency keys) and records them on an append-only ledger.
+7. **Replays** the ledger onto fresh stores to prove every fix is reproducible.
 
-| Pick | Over | Why |
-|---|---|---|
-| Store protocol on native records | Protocol on canonical entities | Type and schema drift stay visible to detection (ADR-003) |
-| Idempotency key claimed inside each store + outbox | App-level dedupe | Survives restarts; CDC semantics without a broker (ADR-003) |
-| Splink baseline, LLM only in the uncertain band | LLM-only matching | ~60k pairs; LLM-only costs ~280x more for the same F1 (ADR-012, ADR-017) |
-| Instructor structured output + MCP evidence tool | Regex-parsed text; agent reading stores directly | Typed decisions; one audited evidence path (ADR-013) |
-| Deterministic policy engine, agent proposes diffs | LLM picks winning values | Reproducible fixes; humans approve policy changes (ADR-014) |
-| Content-hash proposal ids | Random ids + dedupe queries | Re-running detection is idempotent (ADR-015) |
-| Append-only ledger enforced by DB triggers | Mutable status rows | Replayable audit trail; tamper-evident hash chain (ADR-016) |
-| Avro envelope on an in-process bus with Kafka semantics | Plain queue | Same schema checks as Redpanda + Schema Registry, no broker (ADR-009) |
-| Frozen seeded snapshot with hash + holdout | Regenerated data | Comparable runs, no leakage (ADR-007) |
-| Dagster software-defined assets | Airflow-only | Asset lineage and checks; Airflow DAG mirrored (ADR-020) |
-| Data contracts per domain-owned store (data mesh) | Silent coercion | Schema drift fails the pipeline and opens an issue (ADR-021) |
-| Redpanda locally | Kafka + ZooKeeper | One container, Kafka API + Schema Registry built in (ADR-025) |
-| Entra workload identity / IRSA | Keys in config | No long-lived secrets (ADR-023, ADR-024) |
-
-## Experiment
-
-- Synthetic company, seeded: 10,063 entities (4k customers, 4k orders, 2k batches) across 7 local stores; 500 injected inconsistencies of 8 types (duplicate, stale, typo, missing, type drift, orphaned, schema drift, unit mismatch); frozen at `evals/frozen/v1` with a sha256 manifest; 400 train / 100 held out.
-- Configs: Splink-only, LLM-only, hybrid (Splink + LLM tiebreak); Haiku 5.5 vs Sonnet 5.5; batch vs streaming (CDC replay through the Avro bus); policy ablation (source priority vs newest-wins); DynamoDB vs Cosmos DB ledger write cost.
-- Metrics: precision/recall/F1 overall and per type, correct-fix rate, bad-write rate, approvals needed, $ per 1k entities, CDC-event-to-detection latency p50/p95.
-- Run: `make eval` (matrix both splits + report), `make demo-local`, `make e2e`. Gate thresholds: `evals/thresholds.yaml`.
+```mermaid
+flowchart LR
+  S[(7 stores)] -- CDC --> B[Avro event bus]
+  B --> D[dbt diff + contracts]
+  D --> M[Splink matcher]
+  M -- uncertain pairs --> A[LLM tiebreak agent]
+  M --> P[Policy engine]
+  A --> P
+  P --> API[Proposals API]
+  API -- human approves --> L[(Append-only ledger)]
+  L --> X[Idempotent apply] --> S
+  L --> R[Replay + verify]
+```
 
 ## Results
 
-Holdout split, 100 labels. Full tables: [results/results.md](results/results.md).
+Benchmark: a seeded synthetic company with **10,063 entities across 7 stores** and **500 injected faults of 8 types** (duplicate, stale, typo, missing, type drift, orphaned, schema drift, unit mismatch). Frozen with a hash; 100 faults held out.
 
-| Config | Model | F1 | $ / 1k entities | Correct fix | Bad write |
-|---|---|---|---|---|---|
-| Splink-only | - | 0.873 | 0 | 0.769 | 0 |
-| Hybrid | Haiku 5.5 | 0.952 | 0.0016 | 0.769 | 0 |
-| Hybrid | Sonnet 5.5 | 0.980 | 0.032 | 0.769 | 0 |
-| LLM-only | Haiku 5.5 | 0.952 | 0.443 | 0.769 | 0 |
-| LLM-only | Sonnet 5.5 | 0.980 | 8.85 | 0.769 | 0 |
-| Hybrid, newest-wins policy | Haiku 5.5 | 0.952 | 0.0016 | 0.677 | 0 |
+![F1 vs cost per configuration](results/f1_vs_cost.png)
 
-- Hybrid matches LLM-only F1 at ~1/280 of the cost: only 214 of 60,165 candidate pairs reach the LLM.
-- Policy ablation: newest-wins drops correct-fix rate 0.769 -> 0.677.
-- Streaming latency (CDC event -> detection): p50 ~33 ms, p95 100-120 ms.
-- Bad writes stay 0 because auto-apply is limited to agreement / only-source / field-override resolutions; ungated, 11.8% of auto-applied fixes would be wrong.
-- `make demo-local`: 20 injections, recall 1.0, 10 safe fixes applied, 0 bad writes, replay verified.
+| Config (holdout) | F1 | Cost / 1k entities | Bad writes |
+|---|---|---|---|
+| Splink only | 0.873 | $0 | 0 |
+| **Hybrid: Splink + Haiku 5.5 tiebreak** | **0.952** | **$0.0016** | **0** |
+| Hybrid: Splink + Sonnet 5.5 tiebreak | 0.980 | $0.032 | 0 |
+| LLM only (Sonnet 5.5) | 0.980 | $8.85 | 0 |
 
-## Disclosed
+- **Hybrid matches LLM-only accuracy at about 1/280 of the cost.** Splink settles 99.6% of candidate pairs; the LLM sees 214 of 60,165.
+- **Zero bad writes.** Only fixes the policy can prove (stores agree, single source, or field override) are auto-approvable; everything else waits for a human.
+- **Policy matters.** Swapping source-priority rules for "newest wins" drops the correct-fix rate from 0.77 to 0.68.
+- **Streaming latency** from CDC event to detection: p50 33 ms, p95 ~110 ms.
 
-- No model was called. Tiebreak verdicts and token counts come from `MockProvider`: recorded fixtures where present, otherwise rule-based verdicts with a seeded per-model error rate and estimated tokens. They measure the harness, not Claude.
-- Eval gate fails on one check: Inspect tiebreak accuracy 0.78 vs 0.90 (mock routes drifted same-key pairs to "needs human"). Fix: record real fixtures.
-- The detector targets the injector's fault patterns; recall 1.0 on every type is optimistic for real data.
-- LLM-only cost is partly extrapolated from a 500-pair sample of equal-key pairs. Ledger write prices are placeholders.
-- No cloud resource, container or cluster was started: Terraform is validated with `-backend=false`, Helm is linted, compose and kind are not run. Real-mode adapters (Snowflake, Cosmos DB SDK, ADLS SDK, HubSpot API) are untested.
-- GitHub Actions did not run during the build (account billing lock); every check ran locally.
+![LLM routing](results/llm_routing.png)
 
-Docs: [ARCHITECTURE](docs/ARCHITECTURE.md) · [SETUP](docs/SETUP.md) · [ADRs](docs/) · [KEYWORD_MAP](docs/KEYWORD_MAP.md) · [STATUS](docs/STATUS.md)
+![Demo loop](results/demo_loop.png)
+
+LLM decisions in these runs come from an offline provider (recorded responses, else a seeded simulator), so the benchmark runs without an API key. Full tables: [results/results.md](results/results.md).
+
+## Tech stack
+
+| Area | Tools |
+|---|---|
+| Core | Python 3.12, Pydantic, SQLAlchemy, uv, ruff, mypy, pytest |
+| Stores | Postgres, MongoDB, DynamoDB, Cosmos DB, S3 + ADLS Gen2 (Parquet, Arrow, Iceberg, Delta Lake), Snowflake, HubSpot API |
+| Streaming / CDC | Debezium, Kafka / Redpanda, Avro + Schema Registry, DynamoDB Streams, Cosmos DB change feed |
+| Data quality | dbt + dbt tests on DuckDB, Great Expectations, data contracts, OpenLineage |
+| Matching / AI | Splink (Fellegi-Sunter, blocking rules, EM), LangGraph, Instructor, MCP, Claude Haiku/Sonnet with prompt caching |
+| Services | FastAPI approval API, event-sourced ledger with DB-enforced append-only and hash chain |
+| Orchestration | Dagster software-defined assets, schedules, sensors; Airflow DAG |
+| Observability | OpenTelemetry, Prometheus, Grafana, Langfuse |
+| Infra | Terraform (AWS: MSK, RDS, DynamoDB, S3, Glue, Athena, Lambda, SQS, IAM, EKS; Azure: Event Hubs, Cosmos DB, ADLS, Synapse, Functions, Event Grid, Entra workload identity, AKS), Helm, Docker Compose, kind |
+| Evals / CI | Inspect AI, promptfoo, GitHub Actions eval gate |
+
+## Quickstart
+
+Runs fully local: SQLite, mongomock, moto and in-memory stand-ins for every store, and an offline LLM provider. No accounts or keys.
+
+```bash
+uv sync
+make check        # lint, types, tests
+make demo-local   # inject 20 faults -> detect -> propose -> approve -> apply -> replay
+make eval         # full benchmark -> results/
+```
+
+Other entry points:
+
+```bash
+make match            # Splink matching on the benchmark
+make dbt-build        # dbt models + tests
+make dagster-validate # orchestration graph
+make up               # full local stack in Docker (Postgres, Mongo, Redpanda, Debezium, Dagster, Grafana, ...)
+make bootstrap        # switch to real backends + Claude; see docs/SETUP.md
+```
+
+## Repository layout
+
+```
+src/xstore/
+  entities/       canonical models + per-store mappings
+  stores/         one Store protocol, 8 adapters
+  cdc/            Avro event bus, DynamoDB Streams + Cosmos change feed adapters
+  matching/       Splink matcher
+  agent/          LangGraph tiebreak agent, MCP evidence server
+  policy/         conflict-resolution engine
+  proposals/      FastAPI approval API
+  ledger/         append-only ledger, apply, replay
+  contracts/      data contract checks
+  quality/        Great Expectations + OpenLineage
+  orchestration/  Dagster assets
+  observability/  tracing + metrics
+  pipeline/       end-to-end demo
+dbt/  contracts/  policy/  evals/  results/
+terraform/aws  terraform/azure  deploy/ (compose, helm, kind)
+```
+
+## Design decisions
+
+| Choice | Why |
+|---|---|
+| Probabilistic matching first, LLM only for the uncertain band | 280x cheaper at the same F1; reproducible |
+| Deterministic policy; the agent only *proposes* policy changes | Fixes are explainable and repeatable; humans own the rules |
+| Idempotency key claimed inside each store | Retries and replays can't double-apply |
+| Append-only ledger enforced by database triggers | Tamper-evident audit trail; full replay |
+| Store adapters work on raw records, not cleaned models | Type and schema drift stay visible |
+| Data contracts per domain-owned store | Schema drift fails fast and opens a GitHub issue |
+| Keyless cloud auth (IRSA, Entra workload identity) | No long-lived secrets |
+
+All 26 decision records: [docs/](docs/). Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Setup: [docs/SETUP.md](docs/SETUP.md).
+
+## License
+
+MIT

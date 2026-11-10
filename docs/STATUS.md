@@ -1,5 +1,39 @@
 # Status
 
+## Open items (owner checklist)
+
+Merge
+- [ ] Merge #56 first (holds the Day 3 base commit: deps + `mk/*.mk` include), then #50-#55, #52, #53, #57 in any order. Local merge of all eight is conflict-free.
+- [ ] Use merge commits, not squash (branches share the base commit).
+
+Account / environment
+- [ ] GitHub Actions is locked by an account billing issue; no workflow has run. Fix billing, then re-run CI on main.
+- [ ] Bot-authored PRs need Actions (`bot-pr.yml` + Settings > Actions > "Allow GitHub Actions to create and approve pull requests").
+- [ ] `terraform init/validate` never ran (registry.terraform.io blocked here): run `make tf-aws-validate` and `make tf-azure-validate`, commit both `.terraform.lock.hcl`.
+- [ ] kubeconform not run: `helm template deploy/helm/xstore -f deploy/helm/xstore/values-eks.yaml | kubeconform -strict`.
+
+Code gaps (known, small)
+- [ ] `src/xstore/stores/s3_parquet.py:66` falls back to bucket `xstore-lake` when `XSTORE_S3_BUCKET` is unset; should fail.
+- [ ] `src/xstore/stores/snowflake.py:40` `fetchone()` result not None-checked; missing key raises instead of returning None.
+- [ ] `src/xstore/cdc/bus.py:54` `consume` does not dedupe on (store, seq); redelivered events handled twice.
+- [ ] `src/xstore/cdc/cosmos_change_feed.py:24` assumes `_lsn`; a document without it raises KeyError.
+- [ ] `.github/workflows/ci.yml`: no `permissions:` block; Python 3.12 hardcoded.
+- [ ] Eval gate: Inspect tiebreak accuracy 0.78 < 0.90 with the offline provider. Record real fixtures: `MODEL_PROVIDER=anthropic python -m xstore.agent.record_fixtures --pairs <jsonl>`.
+- [ ] Add a Postgres driver (psycopg) for real-mode `DATABASE_URL` (API, ledger) and multi-replica Helm.
+- [ ] Debezium Avro converter jars into `deploy/compose/connect-plugins/` before `make up` registers connectors.
+- [ ] AWS Lambda decodes CDC to an in-process bus only; forward to MSK. Needs a layer with fastavro, pydantic, pyyaml (`lambda_layer_arns`).
+- [ ] Azure Function forwards JSON, not Avro. Nothing writes `lake/batch_delta/` (Synapse Delta view reads it).
+- [ ] dbt reconciles customers and orders only; batches staged, not reconciled. Recency rule not in dbt.
+- [ ] No matcher span in traces (demo doesn't call the matcher). Prometheus registry is process-global.
+- [ ] Contracts nightly job fails by design on the frozen snapshot (it opens drift issues); add `continue-on-error` if a green job is wanted.
+- [ ] Ledger write prices in `evals/prices.yaml` are placeholders; model prices are Anthropic list prices as of 2026-11.
+- [ ] `make replay` on the full snapshot takes ~85 s (mongomock seeding).
+
+Facts not in code
+- Commits use real timestamps; none are backdated.
+- Proxy here blocks GitHub GraphQL, so issues/PRs were created via REST (`gh api`); `gh issue create` / `gh pr create` work normally elsewhere.
+- Benchmark LLM numbers come from the offline provider (fixtures, else seeded simulator); README says so.
+
 ## Day 3 (2026-11-05)
 
 Run mode: `STORE_BACKEND=local`, `MODEL_PROVIDER=mock`. PRs open, not merged.
